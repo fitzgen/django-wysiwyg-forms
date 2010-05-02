@@ -53,15 +53,15 @@ if __name__ == "__main__":
                              "choices": [("yes","yes"),
                                          ("no","no"),
                                          ("maybe","maybe")],
-                             "widget": {"type_": "RadioSelect",}},
+                             "widget": {"type_": "RadioSelect"}},
                             {"name_": "woooooo",
                              "type_": "MultipleChoiceField",
                              "choices": [("yes","yes"),
                                          ("no","no"),
                                          ("maybe","maybe")],
-                             "widget": {"type_": "CheckboxSelectMultiple",}}]}
-    form = build_form(form_dict)
-    instance = form()
+                             "widget": {"type_": "CheckboxSelectMultiple"}}]}
+    Form = build_form(form_dict)
+    instance = Form()
     print form.__name__
     print instance.__doc__
     print instance
