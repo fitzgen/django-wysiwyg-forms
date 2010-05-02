@@ -35,5 +35,12 @@
     </script>
     <script type="text/javascript" src="../wysiwyg_forms/media/wysiwyg_forms.js">
     </script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+          window.form = new DjangoWysiwygFormEditor({ target: "body" });
+          form.newField();
+          form.newField();
+      });
+    </script>
   </body>
 </html>
