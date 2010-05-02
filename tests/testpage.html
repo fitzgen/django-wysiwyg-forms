@@ -1,0 +1,39 @@
+<html>
+  <head>
+      <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/start/jquery-ui.css"
+        type="text/css" rel="Stylesheet" />
+  </head>
+  <body>
+
+    <!-- TODO: these need to get put in a template -->
+
+    <script type="text/template" class="tempest-template" title="wysiwyg-form">
+      <div class="wysiwyg-form">
+        <h1>{{ name }}</h1>
+        <p>{{ description }}</p>
+        <ul class="wysiwyg-form-fields">
+          {{ fields }}
+        </ul>
+      </div>
+    </script>
+
+    <script type="text/template" class="tempest-template" title="wysiwyg-form-field">
+      <li class="wysiwyg-form-field">
+        <h3 class="wysiwyg-form-field-name">{{ name_ }}</h3>
+        <p class="wysiwyg-form-field-label">{{ label }}</p>
+        {{ widget }}
+      </li>
+    </script>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
+    </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js">
+    </script>
+    <script type="text/javascript" src="../wysiwyg_forms/media/jquery.tempest.js">
+    </script>
+    <script type="text/javascript" src="../wysiwyg_forms/media/widgets.js">
+    </script>
+    <script type="text/javascript" src="../wysiwyg_forms/media/wysiwyg_forms.js">
+    </script>
+  </body>
+</html>
