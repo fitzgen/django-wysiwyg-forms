@@ -1,0 +1,9 @@
+.wysiwyg-form-controls {
+    float: left;
+    width: 40%;
+}
+
+.wysiwyg-form {
+    float: right;
+    width: 55%;
+}
