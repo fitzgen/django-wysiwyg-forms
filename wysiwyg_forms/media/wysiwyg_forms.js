@@ -121,7 +121,7 @@ var DjangoWysiwygFormEditor = (function (exports) {
             // Map over the possible field types and create demo fields that can
             // be dragged on to the preview to add a field of that type.
 
-            var fields = [
+            var demoFields = [
                 ["BooleanField", "CheckboxInput", "True or false checkbox"],
                 ["CharField", "TextInput", "Short text"],
                 ["CharField", "Textarea", "Large text"],
@@ -148,12 +148,12 @@ var DjangoWysiwygFormEditor = (function (exports) {
                 return field[2];
             };
 
-            map(fields, function(f) {
+            map(demoFields, function(f) {
                 var el = $("<li></li>");
                 el.append("<h4>" + getFieldDescription(f) + "</h4>");
                 el.append((new djangoWysiwygWidgets[getFieldWidget(f)]).render(
                     "unused",
-                    { disabled: "disabled" },
+                    {},
                     [["one", "Choice one"],
                      ["two", "Choice two"],
                      ["three", "Choice Three"]]
