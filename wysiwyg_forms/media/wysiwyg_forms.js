@@ -103,7 +103,9 @@ var DjangoWysiwygFormEditor = (function (exports) {
             base.find(".wysiwyg-form-controls").tabs();
 
             base.find("ul.wysiwyg-form-fields").sortable({
-                placeholder: ".wysiwyg-form-field-placeholder"
+                axis: "y",
+                containment: "parent",
+                placeholder: "wysiwyg-form-field-placeholder"
             });
 
             // Make a form field and a preview element have the same value.
