@@ -118,6 +118,55 @@ var DjangoWysiwygFormEditor = (function (exports) {
             mirror("h1.wysiwyg-form-name", "input.form-name", "name");
             mirror("p.wysiwyg-form-description", "input.form-description", "description");
 
+            // Map over the possible field types and create demo fields that can
+            // be dragged on to the preview to add a field of that type.
+
+            var fields = [
+                ["BooleanField", "CheckboxInput", "True or false checkbox"],
+                ["CharField", "TextInput", "Short text"],
+                ["CharField", "Textarea", "Large text"],
+                ["ChoiceField", "Select", "Select single option"],
+                ["DateField", "DateInput", "Date"],
+                ["DateTimeField", "DateTimeInput", "Date and Time"],
+                ["EmailField", "TextInput", "Email"],
+                ["FileField", "FileInput", "File Upload"],
+                ["FloatField", "TextInput", "Number (with or without decimal points)"],
+                ["ImageField", "FileInput", "Image upload"],
+                ["IntegerField", "TextInput", "Number (without decimal points)"],
+                ["IPAddressField", "TextInput", "IP Address"],
+                ["MultipleChoiceField", "SelectMultiple", "Select multiple options"],
+                ["TimeField", "TextInput", "Time"],
+                ["URLField", "TextInput", "URL hyperlink"]
+            ];
+            var getFieldType = function (field) {
+                return field[0];
+            };
+            var getFieldWidget = function (field) {
+                return field[1];
+            };
+            var getFieldDescription = function (field) {
+                return field[2];
+            };
+
+            map(fields, function(f) {
+                var el = $("<li></li>");
+                el.append("<h4>" + getFieldDescription(f) + "</h4>");
+                el.append((new djangoWysiwygWidgets[getFieldWidget(f)]).render(
+                    "unused",
+                    { disabled: "disabled" },
+                    [["one", "Choice one"],
+                     ["two", "Choice two"],
+                     ["three", "Choice Three"]]
+                ));
+                el.addClass(getFieldType(f));
+                el.addClass("demo-field");
+                base.find("ul.demo-fields").append(el);
+            });
+
+            base.find(".demo-field").draggable({
+                helper: "clone"
+            });
+
         };
 
         // Public methods and slots
