@@ -74,7 +74,7 @@ var djangoWysiwygWidgets = {};
         attrs.name = name;
         
         var i,
-            output = [["<select", flattenAttrs(attrs), ">"].join("")];
+            output = [["<select ", flattenAttrs(attrs), ">"].join("")];
                         
         for (i = 0; i < choices.length; i++) {
             output.push(['<option value="',
