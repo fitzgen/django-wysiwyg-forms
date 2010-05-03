@@ -74,7 +74,7 @@ var djangoWysiwygWidgets = {};
         attrs.name = name;
         
         var i,
-            ouput = [["<select", flattenAttrs(attrs), ">"].join("")];
+            output = [["<select", flattenAttrs(attrs), ">"].join("")];
                         
         for (i = 0; i < choices.length; i++) {
             output.push(['<option value="',
@@ -101,7 +101,7 @@ var djangoWysiwygWidgets = {};
         attrs.name = name;
         
         var i,
-            ouput = ["<ul>"];
+            output = ["<ul>"];
                         
         for (i = 0; i < choices.length; i++) {
             output.push("<li>" +
