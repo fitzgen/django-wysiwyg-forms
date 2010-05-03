@@ -106,18 +106,18 @@ var DjangoWysiwygFormEditor = (function (exports) {
                 placeholder: ".wysiwyg-form-field-placeholder"
             });
 
-            // TODO: make this type of thing a higher order function.
-            var formName = base.find("h1.wysiwyg-form-name");
-            base.find("input.form-name").bind("keyup", function (event) {
-                self.name = $(this).val();
-                formName.text(self.name);
-            });
+            // Make a form field and a preview element have the same value.
+            var mirror = function (previewSelector, fieldSelector, attrName) {
+                var el = base.find(previewSelector);
+                base.find(fieldSelector).bind("keyup", function (event) {
+                    self[attrName] = $(this).val();
+                    el.text(self[attrName]);
+                });
+            };
 
-            var formDescription = base.find("p.wysiwyg-form-description");
-            base.find("input.form-description").bind("keyup", function (event) {
-                self.description = $(this).val();
-                formDescription.text(self.description);
-            });
+            mirror("h1.wysiwyg-form-name", "input.form-name", "name");
+            mirror("p.wysiwyg-form-description", "input.form-description", "description");
+
         };
 
         // Public methods and slots
