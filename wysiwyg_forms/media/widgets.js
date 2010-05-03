@@ -21,7 +21,9 @@ var djangoWysiwygWidgets = {};
     Input.prototype.inputType = null; // subclasses will override this.
     Input.prototype.render = function (name, attrs) {
         attrs.name = name;
-        return ["<input", flattenAttrs(attrs), "/>"].join(" ");
+        return ["<input",
+                flattenAttrs(attrs),
+                "type=\"" + this.inputType + "\" />"].join(" ");
     };
 
     // Used by RadioSelect to render a single <input type="radio">
