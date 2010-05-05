@@ -1,0 +1,40 @@
+<script type="text/template" class="tempest-template" title="wysiwyg-form">
+  <div class="wysiwyg-form-controls">
+    <ul>
+      <li><a href="#add-field">Add Field</a></li>
+      <li><a href="#field-props">Field properties</a></li>
+      <li><a href="#form-props">Form Properties</a></li>
+    </ul>
+    <div id="add-field">
+      <ul class="demo-fields">
+      </ul>
+    </div>
+    <div id="field-props">
+    </div>
+    <div id="form-props">
+      <dl>
+        <dt>Form Name</dt>
+        <dd><input type="text" class="form-name" value="{{ name }}" /></dd>
+        <dt>Form Description</dt>
+        <dd><input type="text" class="form-description" value="{{ description }}" /></dd>
+      </dl>
+    </div>
+  </div>
+
+  </div>
+  <div class="wysiwyg-form">
+    <h1 class="wysiwyg-form-name">{{ name }}</h1>
+    <p class="wysiwyg-form-description">{{ description }}</p>
+    <ul class="wysiwyg-form-fields">
+      {{ fields }}
+    </ul>
+  </div>
+</script>
+
+<script type="text/template" class="tempest-template" title="wysiwyg-form-field">
+  <li class="wysiwyg-form-field">
+    <h3 class="wysiwyg-form-field-name">{{ name_ }}</h3>
+    <p class="wysiwyg-form-field-label">{{ label }}</p>
+    {{ widget }}
+  </li>
+</script>
