@@ -1,76 +1,34 @@
-<html>
+{% load wysiwyg_forms_tags %}
 
-  <head>
-      <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css"
-            type="text/css"
-            rel="Stylesheet" />
-      <link href="../wysiwyg_forms/media/wysiwyg_styles.css"
-            rel="stylesheet"
-            type="text/css" />
-  </head>
+<div id="django-wysiwyg-form-editor"></div>
 
-  <body>
+{% include_raw "wysiwyg_forms/tempest_templates.html" %}
 
-    <!-- TODO: these need to get put in a template -->
-
-    <script type="text/template" class="tempest-template" title="wysiwyg-form">
-      <div class="wysiwyg-form-controls">
-        <ul>
-          <li><a href="#add-field">Add Field</a></li>
-          <li><a href="#field-props">Field properties</a></li>
-          <li><a href="#form-props">Form Properties</a></li>
-        </ul>
-        <div id="add-field">
-          <ul class="demo-fields">
-          </ul>
-        </div>
-        <div id="field-props">
-        </div>
-        <div id="form-props">
-          <dl>
-            <dt>Form Name</dt>
-            <dd><input type="text" class="form-name" value="{{ name }}" /></dd>
-            <dt>Form Description</dt>
-            <dd><input type="text" class="form-description" value="{{ description }}" /></dd>
-          </dl>
-        </div>
-      </div>
-
-      </div>
-      <div class="wysiwyg-form">
-        <h1 class="wysiwyg-form-name">{{ name }}</h1>
-        <p class="wysiwyg-form-description">{{ description }}</p>
-        <ul class="wysiwyg-form-fields">
-          {{ fields }}
-        </ul>
-      </div>
-    </script>
-
-    <script type="text/template" class="tempest-template" title="wysiwyg-form-field">
-      <li class="wysiwyg-form-field">
-        <h3 class="wysiwyg-form-field-name">{{ name_ }}</h3>
-        <p class="wysiwyg-form-field-label">{{ label }}</p>
-        {{ widget }}
-      </li>
-    </script>
-
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
-    </script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js">
-    </script>
-    <script type="text/javascript" src="../wysiwyg_forms/media/jquery.tempest.js">
-    </script>
-    <script type="text/javascript" src="../wysiwyg_forms/media/widgets.js">
-    </script>
-    <script type="text/javascript" src="../wysiwyg_forms/media/wysiwyg_forms.js">
-    </script>
-    <script type="text/javascript">
-      $(document).ready(function () {
-          window.form = new DjangoWysiwygFormEditor({ target: "body" });
-          form.newField();
-          form.newField();
-          form.newField();
-      });
-    </script>
-  </body>
-</html>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js">
+</script>
+<script type="text/javascript" src="{{ MEDIA_URL }}wysiwyg_forms/jquery.tempest.js">
+</script>
+<script type="text/javascript" src="{{ MEDIA_URL }}wysiwyg_forms/widgets.js">
+</script>
+<script type="text/javascript" src="{{ MEDIA_URL }}wysiwyg_forms/wysiwyg_forms.js">
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("head").append([
+            '<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css"',
+            '      type="text/css"',
+            '      rel="Stylesheet" />',
+            '<link href="{{ MEDIA_URL }}wysiwyg_forms/wysiwyg_styles.css"',
+            '      rel="stylesheet"',
+            '      type="text/css" />'
+        ].join("\n"));
+        var form = new DjangoWysiwygFormEditor({
+            target: "#django-wysiwyg-form-editor"
+        });
+        form.newField();
+        form.newField();
+        form.newField();
+    });
+</script>
