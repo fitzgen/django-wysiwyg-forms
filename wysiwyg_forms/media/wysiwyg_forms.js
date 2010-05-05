@@ -87,6 +87,7 @@ var DjangoWysiwygFormEditor = (function (exports) {
         // Private methods and slots
 
         var fields = [];
+        var base = $(opts.target);
 
         var formToHtml = function () {
             return $.tempest("wysiwyg-form", complete({
@@ -97,15 +98,24 @@ var DjangoWysiwygFormEditor = (function (exports) {
         };
 
         var init = function () {
-            var base = $(opts.target);
             base.append(formToHtml());
 
             base.find(".wysiwyg-form-controls").tabs();
 
             base.find("ul.wysiwyg-form-fields").sortable({
-                axis: "y",
                 containment: "parent",
                 placeholder: "wysiwyg-form-field-placeholder"
+            });
+
+            base.find(".wysiwyg-form").droppable({
+                drop: function (event, ui) {
+                    var droppedField = $(ui.draggable);
+                    if (droppedField.hasClass("demo-field")) {
+                        self.newField(droppedField.clone());
+                    } else {
+                        null;
+                    }
+                }
             });
 
             // Make a form field and a preview element have the same value.
@@ -176,11 +186,11 @@ var DjangoWysiwygFormEditor = (function (exports) {
         self.name = opts.name;
         self.description = opts.description;
 
-        self.newField = function () {
+        self.newField = function (demoField) {
             // TODO: Ability to create things other than text inputs.
             var f = new Field("CharField", "TextInput");
             fields.push(f);
-            $(opts.target + " ul.wysiwyg-form-fields").append(f.toHtml());
+            base.find("ul.wysiwyg-form-fields").append(f.toHtml());
             return this;
         };
 
