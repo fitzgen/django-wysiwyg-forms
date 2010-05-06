@@ -140,7 +140,8 @@ var DjangoWysiwygFormEditor = (function (exports) {
 
         // Prepare the field properties tab for the given field.
         var setUpFieldPropertiesTab = function (field) {
-            var tab = base.find("#field-props");
+            var tab = setUpFieldPropertiesTab.tab || base.find("#field-props");
+            setUpFieldPropertiesTab.tab = tab;
             tab.tempest("wysiwyg-field-properties", complete({
                 is_choice_field: isChoiceField(field)
             }, field));
