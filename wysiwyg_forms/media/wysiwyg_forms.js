@@ -1,7 +1,7 @@
 var DjangoWysiwygFormEditor = (function (exports) {
 
     /**
-     * Utilities
+     * Utilities ***************************************************************
      */
 
     // Updates obj with only the things from other that are not already present
@@ -28,8 +28,25 @@ var DjangoWysiwygFormEditor = (function (exports) {
         }
     };
 
+    var slugify = function (str) {
+        return str.
+            replace(/^[\s\d_\-]+/, "").
+            replace(/\s+$/, "").
+            replace(/[\s\r\n\t]+/g, "-").
+            replace(/[^\w\-]+/g, "").
+            toLowerCase();
+    };
+
+    var isChoiceField = function (f) {
+        var choiceFieldTypes = ["ChoiceField", "MultipleChoiceField"];
+        for (var i = 0; i < choiceFieldTypes.length; i++)
+            if (f.type_ === choiceFieldTypes[i])
+                return true;
+        return false;
+    };
+
     /**
-     * Fields
+     * Fields ******************************************************************
      */
 
     var Field = function (type, widget) {
@@ -54,19 +71,22 @@ var DjangoWysiwygFormEditor = (function (exports) {
 
         self.type_ = type;
         self.widget = widget;
-        self.name_ = "Some Field";
-        self.label = "This is some form field.";
+        self.label = "Some field";
+        self.help_text = "This is a form field";
+        self.required = true;
         self.choices = [];
 
         self.toJson = function () {
-            return JSON.stringify(self);
+            return JSON.stringify(complete({
+                name_: slugify(self.label)
+            }, self));
         };
 
         return self;
     };
 
     /**
-     * DjangoWysiwygFormEditor
+     * DjangoWysiwygFormEditor *************************************************
      */
 
     return function (opts) {
@@ -84,7 +104,7 @@ var DjangoWysiwygFormEditor = (function (exports) {
 
         var self = this;
 
-        // Private methods and slots
+        // Private methods and slots -------------------------------------------
 
         var fields = [];
         var base = $(opts.target);
@@ -97,6 +117,53 @@ var DjangoWysiwygFormEditor = (function (exports) {
             }, self));
         };
 
+        // Helper functions for opening tabs
+
+        var openFormPropertiesTab = function () {
+            return base.find("a[href=#form-props]").click();
+        };
+        var openFieldPropertiesTab = function () {
+            return base.find("a[href=#field-props]").click();
+        };
+        var openDemoFieldsTab = function () {
+            return base.find("a[href=#demo-fields]").click();
+        };
+
+        // Helpers for selecting/deselecting form fields
+
+        var deselectAllFields = function () {
+            base.find(".wysiwyg-form-field").removeClass("wysiwyg-selected");
+        };
+        var selectField = function (f) {
+            f.addClass("wysiwyg-selected");
+        };
+
+        // Prepare the field properties tab for the given field.
+        var setUpFieldPropertiesTab = function (field) {
+            var tab = base.find("#field-props");
+            tab.tempest("wysiwyg-field-properties", complete({
+                is_choice_field: isChoiceField(field)
+            }, field));
+        };
+
+        // Make a form field and a preview element have the same value, as well
+        // as sync the attrName slot in obj with the value being edited.
+        var mirror = function (preview, widget, obj, attrName) {
+            preview = preview instanceof $ ?
+                preview :
+                base.find(preview);
+
+            widget = widget instanceof $ ?
+                widget :
+                base.find(widget);
+
+            widget.bind("keyup", function (event) {
+                obj[attrName] = $(this).val();
+                preview.text(obj[attrName]);
+            });
+        };
+
+        // Initialize the WYSIWYG form editor.
         var init = function () {
             base.append(formToHtml());
 
@@ -110,6 +177,10 @@ var DjangoWysiwygFormEditor = (function (exports) {
             base.find(".wysiwyg-form").droppable({
                 drop: function (event, ui) {
                     var droppedField = $(ui.draggable);
+
+                    // Droppable will register all the field sortables, so make
+                    // sure to only add a field to the form if the thing that
+                    // was dropped is a demo field.
                     if (droppedField.hasClass("demo-field")) {
                         self.newField(droppedField.clone());
                     } else {
@@ -118,17 +189,8 @@ var DjangoWysiwygFormEditor = (function (exports) {
                 }
             });
 
-            // Make a form field and a preview element have the same value.
-            var mirror = function (previewSelector, fieldSelector, attrName) {
-                var el = base.find(previewSelector);
-                base.find(fieldSelector).bind("keyup", function (event) {
-                    self[attrName] = $(this).val();
-                    el.text(self[attrName]);
-                });
-            };
-
-            mirror("h1.wysiwyg-form-name", "input.form-name", "name");
-            mirror("p.wysiwyg-form-description", "input.form-description", "description");
+            mirror("h1.wysiwyg-form-name", "input.form-name", self, "name");
+            mirror("p.wysiwyg-form-description", "input.form-description", self, "description");
 
             // Map over the possible field types and create demo fields that can
             // be dragged on to the preview to add a field of that type.
@@ -181,7 +243,7 @@ var DjangoWysiwygFormEditor = (function (exports) {
 
         };
 
-        // Public methods and slots
+        // Public methods and slots --------------------------------------------
 
         self.name = opts.name;
         self.description = opts.description;
@@ -190,7 +252,31 @@ var DjangoWysiwygFormEditor = (function (exports) {
             // TODO: Ability to create things other than text inputs.
             var f = new Field("CharField", "TextInput");
             fields.push(f);
-            base.find("ul.wysiwyg-form-fields").append(f.toHtml());
+
+            // By attaching each double click handler one at a time, instead of
+            // by grouped selector, we can take advantage of the current lexical
+            // scope. This means we can reference this field directly in the
+            // handler.
+
+            var el = $(f.toHtml());
+            el.dblclick(function (event) {
+                deselectAllFields();
+                selectField(el);
+
+                openFieldPropertiesTab();
+                setUpFieldPropertiesTab(f);
+
+                mirror(el.find(".wysiwyg-form-field-label"),
+                       "input.wysiwyg-field-label",
+                       f,
+                       "label");
+                mirror(el.find(".wysiwyg-form-field-help-text"),
+                       "input.wysiwyg-field-help-text",
+                       f,
+                       "help_text");
+            });
+
+            base.find("ul.wysiwyg-form-fields").append(el);
             return this;
         };
 
