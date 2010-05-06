@@ -142,9 +142,15 @@ var DjangoWysiwygFormEditor = (function (exports) {
         var setUpFieldPropertiesTab = function (field) {
             var tab = setUpFieldPropertiesTab.tab || base.find("#field-props");
             setUpFieldPropertiesTab.tab = tab;
+
             tab.tempest("wysiwyg-field-properties", complete({
                 is_choice_field: isChoiceField(field)
             }, field));
+
+            var toggleHover = function () {
+                $(this).toggleClass("ui-state-hover");
+            };
+            tab.find(".wysiwyg-delete-field").mouseenter(toggleHover).mouseleave(toggleHover);
         };
 
         // Render a placeholder to the field properties tab when no field is
@@ -195,7 +201,10 @@ var DjangoWysiwygFormEditor = (function (exports) {
 
             base.find("ul.wysiwyg-form-fields").sortable({
                 containment: "parent",
-                placeholder: "wysiwyg-form-field-placeholder"
+                placeholder: "wysiwyg-form-field-placeholder",
+                update: function (event, ui) {
+                    // TODO: update the order fo fields to match the order displayed.
+                }
             });
 
             base.find(".wysiwyg-form").droppable({
