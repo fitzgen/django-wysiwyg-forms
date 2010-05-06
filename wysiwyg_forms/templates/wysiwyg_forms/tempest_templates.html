@@ -38,3 +38,26 @@
     {{ widget }}
   </li>
 </script>
+
+<script type="text/template" class="tempest-template" title="wysiwyg-field-properties">
+  <button class="wysiwyg-delete-field">Remove This Field</button>
+  <dl>
+    <dt>Field Label</dt>
+    <dd><input class="wysiwyg-field-label" type="text" value="{{ label }}" /></dd>
+    <dt>Help text</dt>
+    <dd><input class="wysiwyg-field-help-text" type="text" value="{{ help_text }}" /></dd>
+    {% if is_choice_field %}
+    <dt>Choices</dt>
+    <dd>
+      <ul>
+        {% for c in choices %}
+        <li class="wysiwyg-field-choice">
+          <button class="wysiwyg-delete-field">X</button>
+          {{ c }}
+        </li>
+        {% endfor %}
+      </ul>
+    </dd>
+    {% endif %}
+  </dl>
+</script>
