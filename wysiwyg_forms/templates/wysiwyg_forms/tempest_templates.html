@@ -41,12 +41,13 @@
 </script>
 
 <script type="text/template" class="tempest-template" title="wysiwyg-field-properties">
-  <button class="wysiwyg-delete-field ui-state-default">Remove This Field</button>
   <dl>
-    <dt>Field Label</dt>
+    <dt>Label</dt>
     <dd><input class="wysiwyg-field-label" type="text" value="{{ label }}" /></dd>
     <dt>Help text</dt>
     <dd><input class="wysiwyg-field-help-text" type="text" value="{{ help_text }}" /></dd>
+    <dt>Required?</dt>
+    <dd><input type="checkbox" {% if required %}checked{% endif %} /></dd>
     {% if is_choice_field %}
     <dt>Choices</dt>
     <dd>
@@ -61,6 +62,7 @@
     </dd>
     {% endif %}
   </dl>
+  <button class="wysiwyg-delete-field ui-state-default">Remove This Field</button>
 </script>
 
 <script type="text/template" class="tempest-template" title="field-placeholder">

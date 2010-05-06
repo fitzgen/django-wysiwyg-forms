@@ -59,3 +59,9 @@ ul.wysiwyg-form-fields li {
     padding: 0;
     font-size: .8em;
 }
+
+#field-props dt,
+#form-props dt {
+    width: 50%;
+    float:left;
+}
