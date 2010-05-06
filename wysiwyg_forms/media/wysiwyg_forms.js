@@ -147,6 +147,12 @@ var DjangoWysiwygFormEditor = (function (exports) {
             }, field));
         };
 
+        // Render a placeholder to the field properties tab when no field is
+        // selected.
+        var emptyFieldPropertiesTab = function () {
+            base.find("#field-props").tempest("field-placeholder", {});
+        };
+
         // Make a form field and a preview element have the same value, as well
         // as sync the attrName slot in obj with the value being edited.
         var mirror = function (preview, widget, obj, attrName) {
@@ -164,9 +170,26 @@ var DjangoWysiwygFormEditor = (function (exports) {
             });
         };
 
+        var removeField = function (f) {
+            var index, i;
+            for (i = 0; i < fields.length; i++) {
+                if (fields[i] === f) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index === undefined)
+                throw new Error("The field to be removed was not found in this form's fields.");
+            else
+                return fields.splice(index, 1);
+        };
+
         // Initialize the WYSIWYG form editor.
         var init = function () {
             base.append(formToHtml());
+
+            emptyFieldPropertiesTab();
 
             base.find(".wysiwyg-form-controls").tabs();
 
@@ -275,6 +298,13 @@ var DjangoWysiwygFormEditor = (function (exports) {
                        "input.wysiwyg-field-help-text",
                        f,
                        "help_text");
+
+                base.find(".wysiwyg-delete-field").click(function (event) {
+                    el.remove();
+                    removeField(f);
+                    emptyFieldPropertiesTab();
+                    delete f;
+                });
             });
 
             base.find("ul.wysiwyg-form-fields").append(el);
