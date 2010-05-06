@@ -63,7 +63,7 @@ var DjangoWysiwygFormEditor = (function (exports) {
             return $.tempest("wysiwyg-form-field", complete({
                 widget: (new djangoWysiwygWidgets[self.widget]()).render(
                     name,
-                    { disabled: "disabled" },
+                    {},
                     self.choices
                 )
             }, self));
