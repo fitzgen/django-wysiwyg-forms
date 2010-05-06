@@ -24,8 +24,9 @@
             '      rel="stylesheet"',
             '      type="text/css" />'
         ].join("\n"));
-        var form = new DjangoWysiwygFormEditor({
-            target: "#django-wysiwyg-form-editor"
+        new DjangoWysiwygFormEditor({
+            target: "#django-wysiwyg-form-editor",
+            postback: "{{ wysiwyg_forms_postback }}"
         });
         form.newField();
         form.newField();
