@@ -5,6 +5,6 @@ setup(name="Django WYSIWYG Forms",
       description="WYSIWYG Form editor/creator django app",
       author="Nick Fitzgerald",
       author_email="fitzgen@gmail.com",
-      url="http://github.com/fitzgen/djang-wysiwyg-forms",
+      url="http://github.com/fitzgen/django-wysiwyg-forms",
       packages=["wysiwyg_forms"],
       license="MIT")
