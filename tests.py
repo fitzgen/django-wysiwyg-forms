@@ -1,3 +1,4 @@
+from django import forms
 from django.test import TestCase
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
@@ -9,7 +10,7 @@ class BaseTestCase(TestCase):
         self.form = Form.objects.create(name="Test Form",
                                         description="A test form")
 
-class FormModelTestCase(BaseTestCase):
+class AddRemoveFieldTestCase(BaseTestCase):
     def test_add_field(self):
         self.assertEqual(len(self.form.fields), 0,
                          "Should start with 0 fields")
@@ -48,9 +49,9 @@ class FormModelTestCase(BaseTestCase):
             self.assertTrue(False,
                             "Removing non-existant field throws an error")
 
-class FieldModelTestCase(BaseTestCase):
+class AddRemoveChoiceTestCase(BaseTestCase):
     def setUp(self):
-        super(FieldModelTestCase, self).setUp()
+        super(AddRemoveChoiceTestCase, self).setUp()
         self.field = self.form.add_field("Happy and you know it?",
                                          type="MultipleChoiceField")
 
@@ -92,3 +93,24 @@ class FieldModelTestCase(BaseTestCase):
             self.assertTrue(False,
                             "Removing non-existant choice throws an error")
 
+class ModelToDjangoFormTestCase(BaseTestCase):
+    def setUp(self):
+        super(ModelToDjangoFormTestCase, self).setUp()
+        self.field = self.form.add_field("Happy and you know it?",
+                                         type="MultipleChoiceField")
+        self.field.add_choice("yes")
+        self.field.add_choice("no")
+
+    def test_create_django_form_field(self):
+        form_field = self.field.as_django_form_field()
+        self.assertTrue(isinstance(form_field, forms.fields.Field),
+                        "field.as_django_form_field() should return an instance of a django Field.")
+        self.assertEqual(len(form_field.choices), len(self.field.choices),
+                         "The django form field should have same number of choices as field model instance.")
+
+    def test_create_django_form(self):
+        django_form = self.form.as_django_form()
+        self.assertTrue(isinstance(django_form, forms.Form),
+                        "form.as_django_form() should return an instace of a django Form")
+        self.assertEqual(len(django_form.fields), self.form.fields,
+                         "The django form should have ame number of fields as the form model instance.")
