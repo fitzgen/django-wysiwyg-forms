@@ -1,23 +1,30 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+from .models import Form, Field, Choice
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+class BaseTestCase(TestCase):
+    def setUp(self):
+        self.form = Form.objects.create(name="Test Form",
+                                        description="A test form")
 
->>> 1 + 1 == 2
-True
-"""}
+class FormModelTestCase(BaseTestCase):
+    def test_add_field(self):
+        self.assertEqual(len(self.form.fields), 0,
+                         "Should start with 0 fields")
+        self.form.add_field("Email", type="EmailField")
+        self.assertEqual(len(self.form.fields), 1,
+                         "Should now have 1 field")
+        self.assertTrue(isinstance(self.form.fields[0], Field),
+                        "The new field should be an instance of Field.")
+
+    def test_remove_field(self):
+        self.form.add_field("Email", type="EmailField")
+        self.assertEqual(len(self.form.fields), 1,
+                         "Should have 1 field")
+        self.form.remove_field("Email")
+        self.assertEqual(len(self.form.fields), 0,
+                         "Should now have 0 fields")
+
+class FieldModleTestCase(BaseTestCase):
+    pass
 
