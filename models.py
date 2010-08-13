@@ -63,7 +63,7 @@ class Field(models.Model):
     help_text = models.CharField(max_length=250, default="")
     type      = models.CharField(max_length=250)
     position  = models.IntegerField(editable=False)
-    required  = models.BooleanField(required=False, default=True)
+    required  = models.BooleanField(default=True)
     widget    = models.CharField(max_length=250, default="")
 
     def __init__(self, *args, **kwargs):
