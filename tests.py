@@ -109,8 +109,8 @@ class ModelToDjangoFormTestCase(BaseTestCase):
                          "The django form field should have same number of choices as field model instance.")
 
     def test_create_django_form(self):
-        django_form = self.form.as_django_form()
-        self.assertTrue(isinstance(django_form, forms.Form),
-                        "form.as_django_form() should return an instace of a django Form")
-        self.assertEqual(len(django_form.fields), self.form.fields,
-                         "The django form should have ame number of fields as the form model instance.")
+        TestForm = self.form.as_django_form()
+        self.assertTrue(issubclass(TestForm, forms.Form),
+                        "form.as_django_form() should return a subclass of a django Form class")
+        self.assertEqual(len(TestForm().fields), len(self.form.fields),
+                         "The django form should have same number of fields as the form model instance.")
