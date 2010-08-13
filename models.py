@@ -1,5 +1,5 @@
 from django.db import models
-from django import forms
+from django.forms import fields, widgets
 from django.template.defaultfilters import slugify
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
@@ -84,10 +84,11 @@ class Field(models.Model):
         field_properties = { "help_text": self.help_text,
                              "required": self.required }
         if self.choices:
-            field_properties["choices"] = self.choices
+            field_properties["choices"] = ((c.slug, c.label)
+                                           for c in self.choices)
         if self.widget:
-            field_properties["widget"] = getattr(forms, self.widget)()
-        return getattr(forms, self.type)(**field_properties)
+            field_properties["widget"] = getattr(widgets, self.widget)()
+        return getattr(fields, self.type)(**field_properties)
 
     @property
     def choices(self):
