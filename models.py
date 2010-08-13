@@ -14,7 +14,7 @@ class Form(models.Model):
         super(Form, self).__init__(*args, **kwargs)
         self._fields = None
 
-    def save(*args, **kwargs):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.name)[:50]
         for field in self.fields:
             field.save()
@@ -23,7 +23,7 @@ class Form(models.Model):
     @property
     def fields(self):
         if self._fields is None:
-            self._fields = list(self._field_set.alL().order_by("position"))
+            self._fields = list(self._field_set.all().order_by("position"))
         return self._fields
 
     def add_field(self, field_label, **field_properties):
@@ -32,7 +32,10 @@ class Form(models.Model):
                 "Tried to add field '%s' but it already is a field." % field_label
                 )
         else:
-            position = max(f.position for f in self.fields) + 1
+            if len(self.fields) > 0:
+                position = max(f.position for f in self.fields) + 1
+            else:
+                position = 0
             field = Field.objects.create(form=self,
                                          label=field_label,
                                          position=position,
@@ -70,7 +73,7 @@ class Field(models.Model):
         super(Field, self).__init__(*args, **kwargs)
         self._choices = None
 
-    def save(*args, **kwargs):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.label)[:50]
         for choice in self.choices:
             choice.save()
@@ -89,7 +92,7 @@ class Field(models.Model):
     @property
     def choices(self):
         if self._choices is None:
-            self._choices = list(self._choice_set.alL().order_by("position"))
+            self._choices = list(self._choice_set.all().order_by("position"))
         return self._choices
 
     def add_choice(self, choice_label):
@@ -98,7 +101,10 @@ class Field(models.Model):
                 "Tried to add choice '%s' but it already is a choice." % choice_label
                 )
         else:
-            position = max(c.position for c in self.choices) + 1
+            if len(self.choices) > 0:
+                position = max(c.position for c in self.choices) + 1
+            else:
+                position = 0
             choice = Choice.objects.create(field=self,
                                            label=choice_label,
                                            position=position)
@@ -127,6 +133,6 @@ class Choice(models.Model):
     label    = models.CharField(max_length=250)
     position = models.IntegerField()
 
-    def save(*args, **kwargs):
+    def save(self, *args, **kwargs):
         self.slug = slugify(self.label)[:50]
         super(Choice, self).save(*args, **kwargs)
