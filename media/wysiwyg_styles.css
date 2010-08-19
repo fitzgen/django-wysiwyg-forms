@@ -65,3 +65,11 @@ ul.wysiwyg-form-fields li {
     width: 50%;
     float:left;
 }
+
+.hide {
+    display:none;
+}
+
+.clear {
+    clear: both;
+}

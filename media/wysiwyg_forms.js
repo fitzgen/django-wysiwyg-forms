@@ -45,11 +45,19 @@ var DjangoWysiwygFormEditor = (function (exports) {
         return false;
     };
 
+    var makeElementUiToggle = function (el) {
+        var toggleUiHover = function () {
+            $(this).toggleClass("ui-state-hover");
+        };
+
+        el.mouseenter(toggleUiHover).mouseleave(toggleUiHover);
+    };
+                                   
     /**
      * Fields ******************************************************************
      */
 
-    var Field = function (type, widget) {
+    var Field = function (type, widget, label, helpText) {
         if (!(this instanceof Field)) {
             return new Field();
         }
@@ -71,8 +79,8 @@ var DjangoWysiwygFormEditor = (function (exports) {
 
         self.type_ = type;
         self.widget = widget;
-        self.label = "Some field";
-        self.help_text = "This is a form field";
+        self.label = label;
+        self.help_text = helpText;
         self.required = true;
         self.choices = [];
 
@@ -147,10 +155,8 @@ var DjangoWysiwygFormEditor = (function (exports) {
                 is_choice_field: isChoiceField(field)
             }, field));
 
-            var toggleHover = function () {
-                $(this).toggleClass("ui-state-hover");
-            };
-            tab.find(".wysiwyg-delete-field").mouseenter(toggleHover).mouseleave(toggleHover);
+            makeElementUiToggle(tab.find(".wysiwyg-delete-field"));
+            makeElementUiToggle(tab.find(".wysiwyg-add-choice"));
         };
 
         // Render a placeholder to the field properties tab when no field is
@@ -256,18 +262,18 @@ var DjangoWysiwygFormEditor = (function (exports) {
             };
 
             map(demoFields, function(f) {
-                var el = $("<li></li>");
-                el.append("<h4>" + getFieldDescription(f) + "</h4>");
-                el.append((new djangoWysiwygWidgets[getFieldWidget(f)]).render(
-                    "unused",
-                    {},
-                    [["one", "Choice one"],
-                     ["two", "Choice two"],
-                     ["three", "Choice Three"]]
-                ));
-                el.addClass(getFieldType(f));
-                el.addClass("demo-field");
-                base.find("ul.demo-fields").append(el);
+                base.find("ul.demo-fields").tempest("append", "demo-field", {
+                    type: getFieldType(f),
+                    widget: (new djangoWysiwygWidgets[getFieldWidget(f)]).render(
+                        "unused",
+                        {},
+                        [["one", "Choice one"],
+                         ["two", "Choice two"],
+                         ["three", "Choice Three"]]
+                    ),
+                    widget_type: getFieldWidget(f),
+                    description: getFieldDescription(f)
+                });
             });
 
             base.find(".demo-field").draggable({
@@ -282,8 +288,12 @@ var DjangoWysiwygFormEditor = (function (exports) {
         self.description = opts.description;
 
         self.newField = function (demoField) {
-            // TODO: Ability to create things other than text inputs.
-            var f = new Field("CharField", "TextInput");
+            var f = new Field(
+                demoField.find(".field-type").text(),
+                demoField.find(".field-widget").text(),
+                demoField.find("h4").text(),
+                ""
+            );
             fields.push(f);
 
             // By attaching each double click handler one at a time, instead of
@@ -313,6 +323,12 @@ var DjangoWysiwygFormEditor = (function (exports) {
                     removeField(f);
                     emptyFieldPropertiesTab();
                     delete f;
+                    delete el;
+                });
+
+                var choiceList = base.find("#field-props .wysiwyg-field-choices");
+                base.find("#field-props .wysiwyg-add-choice").click(function (event) {
+                    
                 });
             });
 

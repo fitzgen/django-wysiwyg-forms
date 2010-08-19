@@ -50,11 +50,12 @@
     <dd><input type="checkbox" {% if required %}checked{% endif %} /></dd>
     {% if is_choice_field %}
     <dt>Choices</dt>
-    <dd>
-      <ul>
+    <dd class="clear">
+      <button class="wysiwyg-add-choice ui-state-default">Add choice</button>
+      <ul class="wysiwyg-field-choices">
         {% for c in choices %}
         <li class="wysiwyg-field-choice">
-          <button class="wysiwyg-delete-field">X</button>
+          <button class="wysiwyg-delete-choice">X</button>
           {{ c }}
         </li>
         {% endfor %}
@@ -76,4 +77,13 @@
     <li>Add/remove choices if it is a choice field</li>
     <li>Mark the field required or optional</li>
   </ul>
+</script>
+
+<script type="text/template" class="tempest-template" title="demo-field">
+  <li class="{{ type }} demo-field">
+    <h4>{{ description }}</h4>
+    <p class="hide field-type">{{ type }}</p>
+    <p class="hide field-widget">{{ widget_type }}</p>
+    {{ widget }}
+  </li>
 </script>
