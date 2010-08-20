@@ -70,7 +70,7 @@ class Field(models.Model):
     slug      = models.SlugField(editable=False)
     label     = models.CharField(max_length=250)
     help_text = models.CharField(max_length=250, default="")
-    type      = models.CharField(max_length=250)
+    type      = models.CharField(max_length=250, default="CharField")
     position  = models.IntegerField(editable=False)
     required  = models.BooleanField(default=True)
     widget    = models.CharField(max_length=250, default="")
