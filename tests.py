@@ -4,6 +4,7 @@ from django.test import TestCase
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
 from .models import Form, Field, Choice
+from .transactions import Transaction
 
 class BaseTestCase(TestCase):
     def setUp(self):
@@ -114,3 +115,16 @@ class ModelToDjangoFormTestCase(BaseTestCase):
                         "form.as_django_form() should return a subclass of a django Form class")
         self.assertEqual(len(TestForm().fields), len(self.form.fields),
                          "The django form should have same number of fields as the form model instance.")
+
+class TransactionsTestCase(BaseTestCase):
+    def test_change_name(self):
+        transaction = Transaction(action="change name",
+                                  to="New Name")
+        transaction.apply_to(self.form)
+        self.assertEqual(self.form.name, "New Name")
+
+    def test_change_description(self):
+        transaction = Transaction(action="change description",
+                                  to="New description")
+        transaction.apply_to(self.form)
+        self.assertEqual(self.form.description, "New description")
