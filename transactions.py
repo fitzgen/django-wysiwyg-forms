@@ -14,3 +14,11 @@ class Transaction(object):
                 )
         except StopIteration:
             pass
+
+    def apply_to(self, form):
+        if self.action == "change name":
+            form.name = self.to
+        elif self.action == "change description":
+            form.description = self.to
+        else:
+            raise WysiwygFormsException("Unknown action to apply to form: '%s'" % self.action)
