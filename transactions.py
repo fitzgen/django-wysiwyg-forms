@@ -24,5 +24,7 @@ class Transaction(object):
             form.add_field(self.label)
         elif self.action == "remove field":
             form.remove_field(self.label)
+        elif self.action == "rename field":
+            form.rename_field(self.label, self.to)
         else:
             raise WysiwygFormsException("Unknown action to apply to form: '%s'" % self.action)

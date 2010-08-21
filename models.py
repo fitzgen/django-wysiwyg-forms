@@ -32,6 +32,18 @@ class Form(models.Model):
             self._fields = list(self._field_set.all().order_by("position"))
         return self._fields
 
+    def get_field(self, label):
+        """
+        Returns the field whose label is `label`, otherwise throws
+        `FieldDoesNotExist`.
+        """
+        try:
+            return (f for f in self.fields if f.label == label).next()
+        except StopIteration:
+            raise FieldDoesNotExist(
+                "Tried to find the field '%s' but it doesn't exist." % label
+                )
+
     def add_field(self, field_label, **field_properties):
         if any(f for f in self.fields if f.label == field_label):
             raise FieldAlreadyExists(
@@ -50,20 +62,20 @@ class Form(models.Model):
             return field
 
     def remove_field(self, field_label):
-        try:
-            field = (f for f in self.fields if f.label == field_label).next()
-        except StopIteration:
-            raise FieldDoesNotExist(
-                "Tried to remove the field '%s' but it doesn't exist." % field_label
-                )
-        else:
-            self._fields = filter(lambda f: f != field,
-                                  self._fields)
-            for f in self.fields:
-                if f.position > field.position:
-                    f.position -= 1
-            field.delete()
-            return field
+        field = self.get_field(field_label)
+        self._fields = filter(lambda f: f != field,
+                              self._fields)
+        for f in self.fields:
+            if f.position > field.position:
+                f.position -= 1
+        field.delete()
+        return field
+
+    def rename_field(self, old, new):
+        field = self.get_field(old)
+        field.label = new
+        return field
+
 
 class Field(models.Model):
     form      = models.ForeignKey(Form, related_name="_field_set")
