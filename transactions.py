@@ -1,4 +1,5 @@
 from .exceptions import WysiwygFormsException
+from .utils import field_type_has_choices, is_valid_field_type
 
 class Transaction(object):
     def __init__(self, **kwargs):
@@ -30,5 +31,14 @@ class Transaction(object):
             form.get_field(self.label).help_text = self.to
         elif self.action == "move field":
             form.move_field(self.label, self.to)
+        elif self.action == "change field type":
+            if not is_valid_field_type(self.to):
+                raise WysiwygFormsException("Invalid field type: %s" % self.to)
+            else:
+                field = form.get_field(self.label)
+                field.type = self.to
+                if not field_type_has_choices(self.to):
+                    for c in field.choices:
+                        c.delete()
         else:
             raise WysiwygFormsException("Unknown action to apply to form: '%s'" % self.action)

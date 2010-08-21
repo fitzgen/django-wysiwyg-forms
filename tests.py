@@ -189,7 +189,7 @@ class TransactionsTestCase(BaseTestCase):
                                   to="BooleanField")
         transaction.apply_to(self.form)
         self.assertTrue(isinstance(self.field.as_django_form_field(),
-                                   forms.field.BooleanField))
+                                   forms.fields.BooleanField))
 
     def test_add_choice(self):
         num_choices = len(self.field.choices)

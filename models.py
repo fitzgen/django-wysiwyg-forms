@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
+from .utils import field_type_has_choices
 
 class Form(models.Model):
     slug        = models.SlugField(editable=False)
@@ -95,6 +96,14 @@ class Field(models.Model):
         super(Field, self).__init__(*args, **kwargs)
         self._choices = None
 
+    def _ensure_choice_positions(self):
+        """
+        Iterates through self.choices and makes sure that they have the correct
+        position attribute.
+        """
+        for c, i in zip(self.choices, range(len(self.choices))):
+            c.position = i
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.label).replace("-", "_")[:50]
         for choice in self.choices:
@@ -105,7 +114,7 @@ class Field(models.Model):
         # TODO: catch exceptions and display helpful error messages
         field_properties = { "help_text": self.help_text,
                              "required": self.required }
-        if self.choices:
+        if field_type_has_choices(self.type) and self.choices:
             field_properties["choices"] = ((c.slug, c.label)
                                            for c in self.choices)
         if self.widget:
@@ -119,20 +128,23 @@ class Field(models.Model):
         return self._choices
 
     def add_choice(self, choice_label):
-        if any(c for c in self.choices if c.label == choice_label):
-            raise ChoiceAlreadyExists(
-                "Tried to add choice '%s' but it already is a choice." % choice_label
+        if not field_type_has_choices(self.type):
+            raise WysiwygFormsException(
+                "The field type '%s' doesn't support choices" % self.type
                 )
         else:
-            if len(self.choices) > 0:
-                position = max(c.position for c in self.choices) + 1
+            if any(c for c in self.choices if c.label == choice_label):
+                raise ChoiceAlreadyExists(
+                    "Tried to add choice '%s' but it already is a choice." % choice_label
+                    )
             else:
-                position = 0
-            choice = Choice.objects.create(field=self,
-                                           label=choice_label,
-                                           position=position)
-            self._choices.append(choice)
-            return choice
+                position = len(self.choices)
+                choice = Choice.objects.create(field=self,
+                                               label=choice_label,
+                                               position=position)
+                self.choices.append(choice)
+                self._ensure_choice_positions()
+                return choice
 
     def remove_choice(self, choice_label):
         try:
@@ -142,11 +154,8 @@ class Field(models.Model):
                 "Tried to remove the choice '%s' but it doesn't exist." % choice_label
                 )
         else:
-            self._choices = filter(lambda c: c != choice,
-                                   self._choices)
-            for c in self.choices:
-                if c.position > choice.position:
-                    c.position -= 1
+            self.choices.remove(choice)
+            self._ensure_choice_positions()
             choice.delete()
             return choice
 
