@@ -14,6 +14,14 @@ class Form(models.Model):
         super(Form, self).__init__(*args, **kwargs)
         self._fields = None
 
+    def _ensure_field_positions(self):
+        """
+        Iterates through self.fields and makes sure that they have the correct
+        position attribute.
+        """
+        for f, i in zip(self.fields, range(len(self.fields))):
+            f.position = i
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name).replace("-", "_")[:50]
         for field in self.fields:
@@ -50,32 +58,28 @@ class Form(models.Model):
                 "Tried to add field '%s' but it already is a field." % field_label
                 )
         else:
-            if len(self.fields) > 0:
-                position = max(f.position for f in self.fields) + 1
-            else:
-                position = 0
+            position = len(self.fields)
             field = Field.objects.create(form=self,
                                          label=field_label,
                                          position=position,
                                          **field_properties)
-            self._fields.append(field)
+            self.fields.append(field)
+            self._ensure_field_positions()
             return field
 
     def remove_field(self, field_label):
         field = self.get_field(field_label)
-        self._fields = filter(lambda f: f != field,
-                              self._fields)
-        for f in self.fields:
-            if f.position > field.position:
-                f.position -= 1
+        self.fields.remove(field)
+        self._ensure_field_positions()
         field.delete()
         return field
 
-    def rename_field(self, old, new):
-        field = self.get_field(old)
-        field.label = new
+    def move_field(self, label, new_index):
+        field = self.get_field(label)
+        old_index = self.fields.index(field)
+        self.fields.insert(new_index, self.fields.pop(old_index))
+        self._ensure_field_positions()
         return field
-
 
 class Field(models.Model):
     form      = models.ForeignKey(Form, related_name="_field_set")
