@@ -15,7 +15,7 @@ class Form(models.Model):
         self._fields = None
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)[:50]
+        self.slug = slugify(self.name).replace("-", "_")[:50]
         for field in self.fields:
             field.save()
         super(Form, self).save(*args, **kwargs)
@@ -92,7 +92,7 @@ class Field(models.Model):
         self._choices = None
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.label)[:50]
+        self.slug = slugify(self.label).replace("-", "_")[:50]
         for choice in self.choices:
             choice.save()
         super(Field, self).save(*args, **kwargs)
@@ -153,5 +153,5 @@ class Choice(models.Model):
     position = models.IntegerField()
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.label)[:50]
+        self.slug = slugify(self.label).replace("-", "_")[:50]
         super(Choice, self).save(*args, **kwargs)
