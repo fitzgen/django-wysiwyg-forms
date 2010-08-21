@@ -20,5 +20,9 @@ class Transaction(object):
             form.name = self.to
         elif self.action == "change description":
             form.description = self.to
+        elif self.action == "add field":
+            form.add_field(self.label)
+        elif self.action == "remove field":
+            form.remove_field(self.label)
         else:
             raise WysiwygFormsException("Unknown action to apply to form: '%s'" % self.action)
