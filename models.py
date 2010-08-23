@@ -165,6 +165,13 @@ class Field(models.Model):
         choice.delete()
         return choice
 
+    def move_choice(self, choice_label, new_index):
+        choice = self.get_choice(choice_label)
+        old_index = self.choices.index(choice)
+        self.choices.insert(new_index, self.choices.pop(old_index))
+        self._ensure_choice_positions()
+        return choice
+
 class Choice(models.Model):
     field    = models.ForeignKey(Field, related_name="_choice_set")
     slug     = models.SlugField(editable=False)
