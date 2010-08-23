@@ -127,6 +127,18 @@ class Field(models.Model):
             self._choices = list(self._choice_set.all().order_by("position"))
         return self._choices
 
+    def get_choice(self, label):
+        """
+        Returns the choice whose label is `label`, otherwise throws
+        `ChoiceDoesNotExist`.
+        """
+        try:
+            return (c for c in self.choices if c.label == label).next()
+        except StopIteration:
+            raise ChoiceDoesNotExist(
+                "Tried to find the choice '%s' but it doesn't exist." % label
+                )
+
     def add_choice(self, choice_label):
         if not field_type_has_choices(self.type):
             raise WysiwygFormsException(
@@ -147,17 +159,11 @@ class Field(models.Model):
                 return choice
 
     def remove_choice(self, choice_label):
-        try:
-            choice = (c for c in self.choices if c.label == choice_label).next()
-        except StopIteration:
-            raise ChoiceDoesNotExist(
-                "Tried to remove the choice '%s' but it doesn't exist." % choice_label
-                )
-        else:
-            self.choices.remove(choice)
-            self._ensure_choice_positions()
-            choice.delete()
-            return choice
+        choice = self.get_choice(choice_label)
+        self.choices.remove(choice)
+        self._ensure_choice_positions()
+        choice.delete()
+        return choice
 
 class Choice(models.Model):
     field    = models.ForeignKey(Field, related_name="_choice_set")
