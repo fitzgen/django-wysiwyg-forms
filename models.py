@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
+from .utils import field_type_has_choices
 
 class Form(models.Model):
     slug        = models.SlugField(editable=False)
@@ -14,8 +15,16 @@ class Form(models.Model):
         super(Form, self).__init__(*args, **kwargs)
         self._fields = None
 
+    def _ensure_field_positions(self):
+        """
+        Iterates through self.fields and makes sure that they have the correct
+        position attribute.
+        """
+        for f, i in zip(self.fields, range(len(self.fields))):
+            f.position = i
+
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)[:50]
+        self.slug = slugify(self.name).replace("-", "_")[:50]
         for field in self.fields:
             field.save()
         super(Form, self).save(*args, **kwargs)
@@ -32,45 +41,53 @@ class Form(models.Model):
             self._fields = list(self._field_set.all().order_by("position"))
         return self._fields
 
+    def get_field(self, label):
+        """
+        Returns the field whose label is `label`, otherwise throws
+        `FieldDoesNotExist`.
+        """
+        try:
+            return (f for f in self.fields if f.label == label).next()
+        except StopIteration:
+            raise FieldDoesNotExist(
+                "Tried to find the field '%s' but it doesn't exist." % label
+                )
+
     def add_field(self, field_label, **field_properties):
         if any(f for f in self.fields if f.label == field_label):
             raise FieldAlreadyExists(
                 "Tried to add field '%s' but it already is a field." % field_label
                 )
         else:
-            if len(self.fields) > 0:
-                position = max(f.position for f in self.fields) + 1
-            else:
-                position = 0
+            position = len(self.fields)
             field = Field.objects.create(form=self,
                                          label=field_label,
                                          position=position,
                                          **field_properties)
-            self._fields.append(field)
+            self.fields.append(field)
+            self._ensure_field_positions()
             return field
 
     def remove_field(self, field_label):
-        try:
-            field = (f for f in self.fields if f.label == field_label).next()
-        except StopIteration:
-            raise FieldDoesNotExist(
-                "Tried to remove the field '%s' but it doesn't exist." % field_label
-                )
-        else:
-            self._fields = filter(lambda f: f != field,
-                                  self._fields)
-            for f in self.fields:
-                if f.position > field.position:
-                    f.position -= 1
-            field.delete()
-            return field
+        field = self.get_field(field_label)
+        self.fields.remove(field)
+        self._ensure_field_positions()
+        field.delete()
+        return field
+
+    def move_field(self, label, new_index):
+        field = self.get_field(label)
+        old_index = self.fields.index(field)
+        self.fields.insert(new_index, self.fields.pop(old_index))
+        self._ensure_field_positions()
+        return field
 
 class Field(models.Model):
     form      = models.ForeignKey(Form, related_name="_field_set")
     slug      = models.SlugField(editable=False)
     label     = models.CharField(max_length=250)
     help_text = models.CharField(max_length=250, default="")
-    type      = models.CharField(max_length=250)
+    type      = models.CharField(max_length=250, default="CharField")
     position  = models.IntegerField(editable=False)
     required  = models.BooleanField(default=True)
     widget    = models.CharField(max_length=250, default="")
@@ -79,8 +96,16 @@ class Field(models.Model):
         super(Field, self).__init__(*args, **kwargs)
         self._choices = None
 
+    def _ensure_choice_positions(self):
+        """
+        Iterates through self.choices and makes sure that they have the correct
+        position attribute.
+        """
+        for c, i in zip(self.choices, range(len(self.choices))):
+            c.position = i
+
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.label)[:50]
+        self.slug = slugify(self.label).replace("-", "_")[:50]
         for choice in self.choices:
             choice.save()
         super(Field, self).save(*args, **kwargs)
@@ -89,7 +114,7 @@ class Field(models.Model):
         # TODO: catch exceptions and display helpful error messages
         field_properties = { "help_text": self.help_text,
                              "required": self.required }
-        if self.choices:
+        if field_type_has_choices(self.type) and self.choices:
             field_properties["choices"] = ((c.slug, c.label)
                                            for c in self.choices)
         if self.widget:
@@ -103,20 +128,23 @@ class Field(models.Model):
         return self._choices
 
     def add_choice(self, choice_label):
-        if any(c for c in self.choices if c.label == choice_label):
-            raise ChoiceAlreadyExists(
-                "Tried to add choice '%s' but it already is a choice." % choice_label
+        if not field_type_has_choices(self.type):
+            raise WysiwygFormsException(
+                "The field type '%s' doesn't support choices" % self.type
                 )
         else:
-            if len(self.choices) > 0:
-                position = max(c.position for c in self.choices) + 1
+            if any(c for c in self.choices if c.label == choice_label):
+                raise ChoiceAlreadyExists(
+                    "Tried to add choice '%s' but it already is a choice." % choice_label
+                    )
             else:
-                position = 0
-            choice = Choice.objects.create(field=self,
-                                           label=choice_label,
-                                           position=position)
-            self._choices.append(choice)
-            return choice
+                position = len(self.choices)
+                choice = Choice.objects.create(field=self,
+                                               label=choice_label,
+                                               position=position)
+                self.choices.append(choice)
+                self._ensure_choice_positions()
+                return choice
 
     def remove_choice(self, choice_label):
         try:
@@ -126,11 +154,8 @@ class Field(models.Model):
                 "Tried to remove the choice '%s' but it doesn't exist." % choice_label
                 )
         else:
-            self._choices = filter(lambda c: c != choice,
-                                   self._choices)
-            for c in self.choices:
-                if c.position > choice.position:
-                    c.position -= 1
+            self.choices.remove(choice)
+            self._ensure_choice_positions()
             choice.delete()
             return choice
 
@@ -141,5 +166,5 @@ class Choice(models.Model):
     position = models.IntegerField()
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.label)[:50]
+        self.slug = slugify(self.label).replace("-", "_")[:50]
         super(Choice, self).save(*args, **kwargs)

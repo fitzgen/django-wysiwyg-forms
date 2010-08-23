@@ -4,6 +4,7 @@ from django.test import TestCase
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
 from .models import Form, Field, Choice
+from .transactions import Transaction
 
 class BaseTestCase(TestCase):
     def setUp(self):
@@ -114,3 +115,122 @@ class ModelToDjangoFormTestCase(BaseTestCase):
                         "form.as_django_form() should return a subclass of a django Form class")
         self.assertEqual(len(TestForm().fields), len(self.form.fields),
                          "The django form should have same number of fields as the form model instance.")
+
+class TransactionsTestCase(BaseTestCase):
+    def setUp(self):
+        super(TransactionsTestCase, self).setUp()
+        self.field = self.form.add_field("Happy and you know it?",
+                                         type="MultipleChoiceField")
+        self.field.add_choice("yes")
+        self.field.add_choice("no")
+
+    def test_change_name(self):
+        transaction = Transaction(action="change name",
+                                  to="New Name")
+        transaction.apply_to(self.form)
+        self.assertEqual(self.form.name, "New Name")
+
+    def test_change_description(self):
+        transaction = Transaction(action="change description",
+                                  to="New description")
+        transaction.apply_to(self.form)
+        self.assertEqual(self.form.description, "New description")
+
+    def test_add_field(self):
+        num_fields = len(self.form.fields)
+        transaction = Transaction(action="add field",
+                                  label="some new field")
+        transaction.apply_to(self.form)
+        self.assertEqual(num_fields + 1, len(self.form.fields))
+        self.assertTrue(any(f.label == "some new field"
+                            for f in self.form.fields))
+
+    def test_remove_field(self):
+        num_fields = len(self.form.fields)
+        transaction = Transaction(action="remove field",
+                                  label="Happy and you know it?")
+        transaction.apply_to(self.form)
+        self.assertEqual(num_fields - 1, len(self.form.fields))
+        self.assertTrue(not any(f.label == "Happy and you know it?"
+                                for f in self.form.fields))
+
+    def test_rename_field(self):
+        transaction = Transaction(action="rename field",
+                                  label="Happy and you know it?",
+                                  to="new label")
+        transaction.apply_to(self.form)
+        self.assertTrue(any(f.label == "new label"
+                            for f in self.form.fields))
+        self.assertTrue(not any(f.label == "Happy and you know it?"
+                                for f in self.form.fields))
+
+    def test_change_help_text(self):
+        transaction = Transaction(action="change help text",
+                                  label="Happy and you know it?",
+                                  to="helpful")
+        transaction.apply_to(self.form)
+        self.assertEqual(self.field.help_text, "helpful")
+
+    def test_move_field(self):
+        self.form.add_field("a field")
+        self.form.add_field("another field")
+        self.form.add_field("some other field")
+        num_fields = len(self.form.fields)
+        transaction = Transaction(action="move field",
+                                  label="a field",
+                                  to=1)
+        transaction.apply_to(self.form)
+        self.assertEqual(self.form.fields[1].label, "a field")
+        self.assertEqual(num_fields, len(self.form.fields))
+
+    def test_change_field_type(self):
+        transaction = Transaction(action="change field type",
+                                  label="Happy and you know it?",
+                                  to="BooleanField")
+        transaction.apply_to(self.form)
+        self.assertTrue(isinstance(self.field.as_django_form_field(),
+                                   forms.fields.BooleanField))
+
+    def test_add_choice(self):
+        num_choices = len(self.field.choices)
+        transaction = Transaction(action="add choice",
+                                  label="Happy and you know it?",
+                                  choice_label="possibly")
+        transaction.apply_to(self.form)
+        self.assertEqual(num_choices + 1, len(self.field.choices))
+        self.assertTrue(any(c.label == "possibly"
+                            for c in self.field.choices))
+
+    def test_remove_choice(self):
+        num_choices = len(self.field.choices)
+        transaction = Transaction(action="remove choice",
+                                  label="Happy and you know it?",
+                                  choice_label="no")
+        transaction.apply_to(self.form)
+        self.assertEqual(num_choices - 1, len(self.field.choices))
+        self.assertTrue(not any(c.label == "no"
+                                for c in self.field.choices))
+
+    def test_change_choice(self):
+        transaction = Transaction(action="change choice",
+                                  label="Happy and you know it?",
+                                  choice_label="yes",
+                                  to="Hell yeah!")
+        transaction.apply_to(self.form)
+        self.assertTrue(not any(c.label == "yes"
+                                for c in self.field.choices))
+        self.assertTrue(any(c.label == "Hell yeah!"
+                            for c in self.field.choices))
+
+    def test_move_choice(self):
+        self.field.add_choice("maybe")
+        self.field.add_choice("sure")
+        self.field.add_choice("eh eh")
+        num_choices = len(self.field.choices)
+        transaction = Transaction(action="move choice",
+                                  label="Happy and you know it?",
+                                  choice_label="sure",
+                                  to=0)
+        transaction.apply_to(self.form)
+        self.assertEqual(num_choices, len(self.field.choices))
+        self.assertEqual(self.field.choices[0].label, "sure")
