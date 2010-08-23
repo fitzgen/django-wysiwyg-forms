@@ -42,5 +42,7 @@ class Transaction(object):
                         c.delete()
         elif self.action == "add choice":
             form.get_field(self.label).add_choice(self.choice_label)
+        elif self.action == "remove choice":
+            form.get_field(self.label).remove_choice(self.choice_label)
         else:
             raise WysiwygFormsException("Unknown action to apply to form: '%s'" % self.action)
