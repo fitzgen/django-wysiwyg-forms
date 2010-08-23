@@ -40,5 +40,7 @@ class Transaction(object):
                 if not field_type_has_choices(self.to):
                     for c in field.choices:
                         c.delete()
+        elif self.action == "add choice":
+            form.get_field(self.label).add_choice(self.choice_label)
         else:
             raise WysiwygFormsException("Unknown action to apply to form: '%s'" % self.action)
