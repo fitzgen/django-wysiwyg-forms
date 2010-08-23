@@ -1,10 +1,11 @@
-var djangoWysiwygWidgets = {};
+DWF = DWF || {};
+DWF.widgets = DWF.widgets || {};
 
 (function (w) {
 
     var flattenAttrs = function (attrs) {
         var results = [], key;
-        for (key in attrs)
+        for (key in attrs) if (attrs.hasOwnProperty(key))
             results.push([key, '="', attrs[key], '"'].join(""));
         return results.join(" ");
     };
@@ -41,11 +42,6 @@ var djangoWysiwygWidgets = {};
     w.PasswordInput.prototype = new Input();
     w.PasswordInput.prototype.inputType = "password";
 
-    // Don't need hidden inputs for a WYSIWYG form builder...
-    // w.HiddenInput = function () {};
-    // w.HiddenInput.prototype = new Input();
-    // w.HiddenInput.prototype.inputType = "hidden";
-
     w.FileInput = function () {};
     w.FileInput.prototype = new Input();
     w.FileInput.prototype.inputType = "file";
@@ -72,10 +68,10 @@ var djangoWysiwygWidgets = {};
     w.Select = function () {};
     w.Select.prototype.render = function (name, attrs, choices) {
         attrs.name = name;
-        
+
         var i,
             output = [["<select ", flattenAttrs(attrs), ">"].join("")];
-                        
+
         for (i = 0; i < choices.length; i++) {
             output.push(['<option value="',
                          choiceVal(choices[i]),
@@ -83,7 +79,7 @@ var djangoWysiwygWidgets = {};
                          choiceLabel(choices[i]),
                          "</option>"].join(""));
         }
-        
+
         output.push("</select>");
         return output.join("\n");
     };
@@ -99,37 +95,37 @@ var djangoWysiwygWidgets = {};
     w.RadioSelect = function () {};
     w.RadioSelect.prototype.render = function (name, attrs, choices) {
         attrs.name = name;
-        
+
         var i,
             output = ["<ul>"];
-                        
+
         for (i = 0; i < choices.length; i++) {
             output.push("<li>" +
                         (new RadioInput()).render(name, attrs) +
                         choiceLabel(choices[i]) +
                         "</li>");
         }
-        
+
         output.push("</ul>");
-        return output.join("\n");        
+        return output.join("\n");
     };
 
     w.CheckboxSelectMultiple = function () {};
     w.CheckboxSelectMultiple.prototype.render = function (name, attrs, choices) {
         attrs.name = name;
-        
+
         var i,
             ouput = ["<ul>"];
-                        
+
         for (i = 0; i < choices.length; i++) {
             output.push("<li>" +
                         (new CheckboxInput()).render(name, attrs) +
                         choiceLabel(choices[i]) +
                         "</li>");
         }
-        
+
         output.push("</ul>");
-        return output.join("\n");                
+        return output.join("\n");
     };
-     
-}(djangoWysiwygWidgets));
+
+}(DWF.widgets));
