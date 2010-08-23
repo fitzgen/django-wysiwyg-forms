@@ -1,6 +1,7 @@
 from django.db import models
 from django import forms
 from django.template.defaultfilters import slugify
+from django.utils.datastructures import SortedDict
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
@@ -30,7 +31,7 @@ class Form(models.Model):
         super(Form, self).save(*args, **kwargs)
 
     def as_django_form(self):
-        properties = {}
+        properties = SortedDict()
         for field in self.fields:
             properties[field.slug] = field.as_django_form_field()
         return type(str(self.slug), (forms.Form,), properties)
