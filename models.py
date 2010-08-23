@@ -2,6 +2,7 @@ from django.db import models
 from django import forms
 from django.template.defaultfilters import slugify
 from django.utils.datastructures import SortedDict
+from django.utils import simplejson as json
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
@@ -35,6 +36,13 @@ class Form(models.Model):
         for field in self.fields:
             properties[field.slug] = field.as_django_form_field()
         return type(str(self.slug), (forms.Form,), properties)
+
+    def as_json(self):
+        # Don't use Django's serializers because it is just too cluttered.
+        return json.dumps({ "name"        : self.name,
+                            "id"          : self.id,
+                            "description" : self.description,
+                            "fields"      : [f.as_json() for f in self.fields] })
 
     @property
     def fields(self):
@@ -121,6 +129,13 @@ class Field(models.Model):
         if self.widget:
             field_properties["widget"] = getattr(forms.widgets, self.widget)()
         return getattr(forms.fields, self.type)(**field_properties)
+
+    def as_json(self):
+        return json.dumps({ "label"     : self.label,
+                            "type"      : self.type,
+                            "help_text" : self.help_text,
+                            "required"  : self.required,
+                            "choices"   : [c.label for c in self.choices] })
 
     @property
     def choices(self):
