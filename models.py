@@ -42,7 +42,13 @@ class Form(models.Model):
         return json.dumps({ "name"        : self.name,
                             "id"          : self.id,
                             "description" : self.description,
-                            "fields"      : [f.as_json() for f in self.fields] })
+                            "fields"      : [{ "label"     : f.label,
+                                               "type"      : f.type,
+                                               "widget"    : f.widget,
+                                               "help_text" : f.help_text,
+                                               "required"  : f.required,
+                                               "choices"   : [c.label for c in f.choices] }
+                                             for f in self.fields] })
 
     @property
     def fields(self):
@@ -129,13 +135,6 @@ class Field(models.Model):
         if self.widget:
             field_properties["widget"] = getattr(forms.widgets, self.widget)()
         return getattr(forms.fields, self.type)(**field_properties)
-
-    def as_json(self):
-        return json.dumps({ "label"     : self.label,
-                            "type"      : self.type,
-                            "help_text" : self.help_text,
-                            "required"  : self.required,
-                            "choices"   : [c.label for c in self.choices] })
 
     @property
     def choices(self):
