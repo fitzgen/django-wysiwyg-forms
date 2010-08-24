@@ -1,4 +1,4 @@
-DWF = DWF || {};
+DWF = window.DWF || {};
 DWF.widgets = DWF.widgets || {};
 
 (function (w) {
