@@ -1,333 +1,154 @@
-var DjangoWysiwygFormEditor = (function (exports) {
+DWF = window.DWF || {};
 
-    /**
-     * Utilities ***************************************************************
-     */
-
-    // Updates obj with only the things from other that are not already present
-    // in obj.
-    var complete = function (obj, other) {
-        var thing;
-        for (thing in other)
-            if (other.hasOwnProperty(thing) && !obj.hasOwnProperty(thing))
-                obj[thing] = other[thing];
-        return obj;
+(function () {
+    var transactions = []
+    DWF.getTransactions = function () {
+        return transactions.slice(0); // slice to make a shallow copy
     };
 
-    var map = function (arr, fn) {
-        var results, i;
-
-        if (typeof Array.prototype.map === "function") {
-            return Array.prototype.map.call(arr, fn);
-        }
-        else {
-            results = [];
-            for (i = 0; i < arr.length; i++)
-                results.push(fn.call(arr[i], arr[i], i));
-            return results;
-        }
+    DWF.addTransaction = function (t) {
+        transactions.push(t);
     };
-
-    var slugify = function (str) {
-        return str.
-            replace(/^[\s\d_\-]+/, "").
-            replace(/\s+$/, "").
-            replace(/[\s\r\n\t]+/g, "-").
-            replace(/[^\w\-]+/g, "").
-            toLowerCase();
-    };
-
-    var isChoiceField = function (f) {
-        var choiceFieldTypes = ["ChoiceField", "MultipleChoiceField"];
-        for (var i = 0; i < choiceFieldTypes.length; i++)
-            if (f.type_ === choiceFieldTypes[i])
-                return true;
-        return false;
-    };
-
-    /**
-     * Fields ******************************************************************
-     */
-
-    var Field = function (type, widget) {
-        if (!(this instanceof Field)) {
-            return new Field();
-        }
-        var self = this;
-
-        // Privates
-
-        // Publics
-
-        self.toHtml = function () {
-            return $.tempest("wysiwyg-form-field", complete({
-                widget: (new djangoWysiwygWidgets[self.widget]()).render(
-                    name,
-                    {},
-                    self.choices
-                )
-            }, self));
-        };
-
-        self.type_ = type;
-        self.widget = widget;
-        self.label = "Some field";
-        self.help_text = "This is a form field";
-        self.required = true;
-        self.choices = [];
-
-        self.toJson = function () {
-            return JSON.stringify(complete({
-                name_: slugify(self.label)
-            }, self));
-        };
-
-        return self;
-    };
-
-    /**
-     * DjangoWysiwygFormEditor *************************************************
-     */
-
-    return function (opts) {
-        if (!(this instanceof DjangoWysiwygFormEditor)) {
-            return new (exports.DjangoWysiwygFormEditor(opts));
-        }
-
-        opts = complete(opts, {
-            name: "Your Form",
-            description: "This is your form."
-        });
-
-        if (opts.target === undefined)
-            throw new TypeError("DjangoWysiwygFormEditor: No target for attachment specified");
-
-        var self = this;
-
-        // Private methods and slots -------------------------------------------
-
-        var fields = [];
-        var base = $(opts.target);
-
-        var formToHtml = function () {
-            return $.tempest("wysiwyg-form", complete({
-                fields: map(fields, function () {
-                    return this.toHtml();
-                }).join("\n")
-            }, self));
-        };
-
-        // Helper functions for opening tabs
-
-        var openFormPropertiesTab = function () {
-            return base.find("a[href=#form-props]").click();
-        };
-        var openFieldPropertiesTab = function () {
-            return base.find("a[href=#field-props]").click();
-        };
-        var openDemoFieldsTab = function () {
-            return base.find("a[href=#demo-fields]").click();
-        };
-
-        // Helpers for selecting/deselecting form fields
-
-        var deselectAllFields = function () {
-            base.find(".wysiwyg-form-field").removeClass("wysiwyg-selected");
-        };
-        var selectField = function (f) {
-            f.addClass("wysiwyg-selected");
-        };
-
-        // Prepare the field properties tab for the given field.
-        var setUpFieldPropertiesTab = function (field) {
-            var tab = setUpFieldPropertiesTab.tab || base.find("#field-props");
-            setUpFieldPropertiesTab.tab = tab;
-            tab.tempest("wysiwyg-field-properties", complete({
-                is_choice_field: isChoiceField(field)
-            }, field));
-        };
-
-        // Render a placeholder to the field properties tab when no field is
-        // selected.
-        var emptyFieldPropertiesTab = function () {
-            base.find("#field-props").tempest("field-placeholder", {});
-        };
-
-        // Make a form field and a preview element have the same value, as well
-        // as sync the attrName slot in obj with the value being edited.
-        var mirror = function (preview, widget, obj, attrName) {
-            preview = preview instanceof $ ?
-                preview :
-                base.find(preview);
-
-            widget = widget instanceof $ ?
-                widget :
-                base.find(widget);
-
-            widget.bind("keyup", function (event) {
-                obj[attrName] = $(this).val();
-                preview.text(obj[attrName]);
-            });
-        };
-
-        var removeField = function (f) {
-            var index, i;
-            for (i = 0; i < fields.length; i++) {
-                if (fields[i] === f) {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index === undefined)
-                throw new Error("The field to be removed was not found in this form's fields.");
-            else
-                return fields.splice(index, 1);
-        };
-
-        // Initialize the WYSIWYG form editor.
-        var init = function () {
-            base.append(formToHtml());
-
-            emptyFieldPropertiesTab();
-
-            base.find(".wysiwyg-form-controls").tabs();
-
-            base.find("ul.wysiwyg-form-fields").sortable({
-                containment: "parent",
-                placeholder: "wysiwyg-form-field-placeholder"
-            });
-
-            base.find(".wysiwyg-form").droppable({
-                drop: function (event, ui) {
-                    var droppedField = $(ui.draggable);
-
-                    // Droppable will register all the field sortables, so make
-                    // sure to only add a field to the form if the thing that
-                    // was dropped is a demo field.
-                    if (droppedField.hasClass("demo-field")) {
-                        self.newField(droppedField.clone());
-                    } else {
-                        null;
-                    }
-                }
-            });
-
-            mirror("h1.wysiwyg-form-name", "input.form-name", self, "name");
-            mirror("p.wysiwyg-form-description", "input.form-description", self, "description");
-
-            // Map over the possible field types and create demo fields that can
-            // be dragged on to the preview to add a field of that type.
-
-            var demoFields = [
-                ["BooleanField", "CheckboxInput", "True or false checkbox"],
-                ["CharField", "TextInput", "Short text"],
-                ["CharField", "Textarea", "Large text"],
-                ["ChoiceField", "Select", "Select single option"],
-                ["DateField", "DateInput", "Date"],
-                ["DateTimeField", "DateTimeInput", "Date and Time"],
-                ["EmailField", "TextInput", "Email"],
-                ["FileField", "FileInput", "File Upload"],
-                ["FloatField", "TextInput", "Number (with or without decimal points)"],
-                ["ImageField", "FileInput", "Image upload"],
-                ["IntegerField", "TextInput", "Number (without decimal points)"],
-                ["IPAddressField", "TextInput", "IP Address"],
-                ["MultipleChoiceField", "SelectMultiple", "Select multiple options"],
-                ["TimeField", "TextInput", "Time"],
-                ["URLField", "TextInput", "URL hyperlink"]
-            ];
-            var getFieldType = function (field) {
-                return field[0];
-            };
-            var getFieldWidget = function (field) {
-                return field[1];
-            };
-            var getFieldDescription = function (field) {
-                return field[2];
-            };
-
-            map(demoFields, function(f) {
-                var el = $("<li></li>");
-                el.append("<h4>" + getFieldDescription(f) + "</h4>");
-                el.append((new djangoWysiwygWidgets[getFieldWidget(f)]).render(
-                    "unused",
-                    {},
-                    [["one", "Choice one"],
-                     ["two", "Choice two"],
-                     ["three", "Choice Three"]]
-                ));
-                el.addClass(getFieldType(f));
-                el.addClass("demo-field");
-                base.find("ul.demo-fields").append(el);
-            });
-
-            base.find(".demo-field").draggable({
-                helper: "clone"
-            });
-
-        };
-
-        // Public methods and slots --------------------------------------------
-
-        self.name = opts.name;
-        self.description = opts.description;
-
-        self.newField = function (demoField) {
-            // TODO: Ability to create things other than text inputs.
-            var f = new Field("CharField", "TextInput");
-            fields.push(f);
-
-            // By attaching each double click handler one at a time, instead of
-            // by grouped selector, we can take advantage of the current lexical
-            // scope. This means we can reference this field directly in the
-            // handler.
-
-            var el = $(f.toHtml());
-            el.dblclick(function (event) {
-                deselectAllFields();
-                selectField(el);
-
-                openFieldPropertiesTab();
-                setUpFieldPropertiesTab(f);
-
-                mirror(el.find(".wysiwyg-form-field-label"),
-                       "input.wysiwyg-field-label",
-                       f,
-                       "label");
-                mirror(el.find(".wysiwyg-form-field-help-text"),
-                       "input.wysiwyg-field-help-text",
-                       f,
-                       "help_text");
-
-                base.find(".wysiwyg-delete-field").click(function (event) {
-                    el.remove();
-                    removeField(f);
-                    emptyFieldPropertiesTab();
-                    delete f;
-                });
-            });
-
-            base.find("ul.wysiwyg-form-fields").append(el);
-            return this;
-        };
-
-        self.save = function () {
-            throw new Error("TODO");
-        };
-
-        self.toJson = function () {
-            return JSON.stringify({
-                name: self.name,
-                description: self.description,
-                fields: map(fields, function (f) {
-                    return f.toJson();
-                })
-            });
-        };
-
-        init();
-
-        return self;
-    };
-
 }());
+
+DWF.fieldTypes = [
+    ["BooleanField", "CheckboxInput", "True or false checkbox"],
+    ["CharField", "TextInput", "Short text"],
+    ["CharField", "Textarea", "Large text"],
+    ["ChoiceField", "Select", "Select single option"],
+    ["DateField", "DateInput", "Date"],
+    ["DateTimeField", "DateTimeInput", "Date and Time"],
+    ["EmailField", "TextInput", "Email"],
+    ["FileField", "FileInput", "File Upload"],
+    ["FloatField", "TextInput", "Number (with or without decimal points)"],
+    ["ImageField", "FileInput", "Image upload"],
+    ["IntegerField", "TextInput", "Number (without decimal points)"],
+    ["IPAddressField", "TextInput", "IP Address"],
+    ["MultipleChoiceField", "SelectMultiple", "Select multiple options"],
+    ["TimeField", "TextInput", "Time"],
+    ["URLField", "TextInput", "URL hyperlink"]
+];
+
+DWF.formName = {
+    display : $("#DWF-form-name"),
+    input   : $("#DWF-form-settings-name")
+};
+DWF.formDesc = {
+    display : $("#DWF-form-description"),
+    input   : $("#DWF-form-settings-description")
+};
+
+DWF.mirror = function (display, widget, callback) {
+    widget.bind("keyup", function () {
+        display.text(widget.val());
+        callback && callback();
+    });
+};
+
+DWF.register = (function () {
+    var prev = {},
+    views = {};
+
+    // Call the appropriate setUp and tearDown views whenever the
+    // window.location.hash changes.
+    $(window).hashchange(function () {
+        var hash = location.hash;
+        prev.tearDown && prev.tearDown();
+
+        if (views[hash]) {
+            views[hash].setUp && views[hash].setUp();
+            prev = views[hash];
+        } else {
+            views["__default__"].setUp();
+            prev = {};
+        }
+    });
+
+    // Run the __init__ view on document ready
+    $(document).ready(function () {
+        views["__init__"] && views["__init__"]();
+    });
+
+    // Returns a function that is used to register views to paths.
+    return function (path, opts) {
+        views[path] = opts;
+    };
+}());
+
+DWF.register("#/add-field", {
+    setUp: function () {
+        $("#DWF-add-field").show();
+    },
+    tearDown: function () {
+        $("#DWF-add-field").hide();
+    }
+});
+
+DWF.register("#/field-settings", {
+    setUp: function () {
+        $("#DWF-field-settings").show();
+    },
+    tearDown: function () {
+        $("#DWF-field-settings").hide();
+    }
+});
+
+DWF.register("#/form-settings", (function () {
+    var oldName, oldDesc;
+    return {
+        setUp: function () {
+            $("#DWF-form-settings").show();
+
+            DWF.formName.input.val(oldName = DWF.formName.display.text());
+            DWF.formDesc.input.val(oldDesc = DWF.formDesc.display.text());
+
+            DWF.mirror(DWF.formName.display, DWF.formName.input);
+            DWF.mirror(DWF.formDesc.display, DWF.formDesc.input);
+        },
+        tearDown: function () {
+            $("#DWF-form-settings").hide();
+
+            DWF.formName.input.unbind("keyup");
+            DWF.formDesc.input.unbind("keyup");
+
+            // If the value of either has changed, create a transaction.
+            if (oldName !== DWF.formName.display.text()) {
+                DWF.addTransaction({
+                    action : "change name",
+                    to     : DWF.formName.display.text()
+                });
+            }
+            if (oldDesc !== DWF.formDesc.display.text()) {
+                DWF.addTransaction({
+                    action : "change description",
+                    to     : DWF.formDesc.display.text()
+                });
+            }
+        }
+    }
+}()));
+
+DWF.register("#/save", {
+    setUp: function () {},
+    tearDown: function () {}
+})
+
+// By default, go to the form settings view
+DWF.register("__default__", {
+    setUp: function () {
+        location.hash = "#/form-settings";
+    },
+    tearDown: function () {}
+});
+
+DWF.register("__init__", function () {
+    var initialForm = {{ form|safe }};
+    DWF.formName.display.text(initialForm.name);
+    DWF.formDesc.display.text(initialForm.description);
+    DWF.formId = initialForm.id;
+
+    // TODO: map through fields and render them.
+
+    location.hash = "#/form-settings";
+    $(window).hashchange();
+});
