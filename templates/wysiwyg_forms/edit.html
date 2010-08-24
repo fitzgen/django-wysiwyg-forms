@@ -1,0 +1,26 @@
+{% extends base_template_name %}
+
+{% block content %}
+<div id="django-wysiwyg-form-editor"></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
+</script>
+{% comment %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js">
+</script>
+{% endcomment %}
+
+<script type="text/javascript">
+{# TODO: dwf.css #}
+{% include "wysiwyg_forms/dwf.js" %}
+{% include "wysiwyg_forms/widgets.js" %}
+    $(document).ready(function () {
+        var form = new DjangoWysiwygFormEditor({
+            target: "#django-wysiwyg-form-editor"
+        });
+    });
+</script>
+
+{% endblock %}
