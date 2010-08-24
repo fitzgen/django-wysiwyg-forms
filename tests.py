@@ -159,6 +159,13 @@ class ApplyTransactionsViewTestCase(BaseTestCase):
 
         # TODO: Test the response JSON
 
+class NewFormViewTestCase(BaseTestCase):
+    def test_a_new_form_is_created(self):
+        num_forms = Form.objects.all().count()
+        response = self.get("wysiwyg_forms_new_form")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(num_forms + 1, Form.objects.all().count())
+
 class TransactionsTestCase(BaseTestCase):
     def setUp(self):
         super(TransactionsTestCase, self).setUp()
