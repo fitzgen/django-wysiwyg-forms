@@ -1,26 +1,50 @@
 {% extends base_template_name %}
 
 {% block content %}
-<div id="django-wysiwyg-form-editor"></div>
+<div id="DWF-base">
+
+  <div id="DWF-control-panel">
+
+    <ul>
+      <li><a href="#/add-field">Add a Field</a></li>
+      <li><a href="#/field-settings">Field Settings</a></li>
+      <li><a href="#/form-settings">Form Settings</a></li>
+    </ul>
+
+    <div id="DWF-add-field"></div>
+    <div id="DWF-field-settings"></div>
+    <div id="DWF-form-settings">
+      <label>
+        Name
+        <input type="text" id="DWF-form-settings-name" />
+      </label>
+      <label>
+        Description
+        <textarea id="DWF-form-settings-description">
+        </textarea>
+      </label>
+    </div>
+
+  </div>
+
+  <div id="DWF-form">
+    <h1 id="DWF-form-name"></h1>
+    <div id="DWF-form-description"></div>
+    <ol id="DWF-form-fields"></ol>
+  </div>
+
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
 </script>
-{% comment %}
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js">
+<script type="text/javascript" src="{% url wysiwyg_forms_media_hashchange_js %}">
 </script>
-{% endcomment %}
 
 <script type="text/javascript">
-{# TODO: dwf.css #}
-{% include "wysiwyg_forms/dwf.js" %}
-{% include "wysiwyg_forms/widgets.js" %}
-    $(document).ready(function () {
-        var form = new DjangoWysiwygFormEditor({
-            target: "#django-wysiwyg-form-editor"
-        });
-    });
+    {% include "wysiwyg_forms/widgets.js" %}
+    {% include "wysiwyg_forms/dwf.js" %}
 </script>
 
 {% endblock %}
