@@ -40,6 +40,8 @@ class Transaction(object):
                 if not field_type_has_choices(self.to):
                     for c in field.choices:
                         c.delete()
+        elif self.action == "change field widget":
+            form.get_field(self.label).widget = self.to
         elif self.action == "add choice":
             form.get_field(self.label).add_choice(self.choice_label)
         elif self.action == "remove choice":

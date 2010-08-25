@@ -241,6 +241,14 @@ class TransactionsTestCase(BaseTestCase):
         self.assertTrue(isinstance(self.field.as_django_form_field(),
                                    forms.fields.BooleanField))
 
+    def test_change_field_widget(self):
+        transaction = Transaction(action="change field widget",
+                                  label="Happy and you know it?",
+                                  to="RadioSelect")
+        transaction.apply_to(self.form)
+        self.assertTrue(isinstance(self.form.get_field("Happy and you know it?").as_django_form_field().widget,
+                                   forms.widgets.RadioSelect))
+
     def test_add_choice(self):
         num_choices = len(self.field.choices)
         transaction = Transaction(action="add choice",
