@@ -29,6 +29,8 @@ DWF.fieldTypes = [
     ["URLField", "TextInput", "URL hyperlink"]
 ];
 
+DWF.fieldsList = $("#DWF-form-fields");
+
 DWF.formName = {
     display : $("#DWF-form-name"),
     input   : $("#DWF-form-settings-name")
@@ -147,7 +149,14 @@ DWF.register("__init__", function () {
     DWF.formDesc.display.text(initialForm.description);
     DWF.formId = initialForm.id;
 
-    // TODO: map through fields and render them.
+    for (var i = 0, len = initialForm.fields.length; i < len; i++)
+        DWF.fieldsList.append( (function (f) {
+            var attrs = { disabled: true },
+            renderedWidget = DWF.widgets[f.widget] ?
+                (new DWF.widgets[f.widget]()).render(f.name, attrs, f.choices) :
+                (new DWF.widgets.TextInput()).render(f.name, attrs);
+            return "<li><label>" + f.label + renderedWidget + "</label></li>";
+        }(initialForm.fields[i])) );
 
     location.hash = "#/form-settings";
     $(window).hashchange();
