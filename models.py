@@ -43,11 +43,12 @@ class Form(models.Model):
                             "id"          : self.id,
                             "description" : self.description,
                             "fields"      : [{ "label"     : f.label,
+                                               "name"      : f.slug,
                                                "type"      : f.type,
                                                "widget"    : f.widget,
                                                "help_text" : f.help_text,
                                                "required"  : f.required,
-                                               "choices"   : [c.label for c in f.choices] }
+                                               "choices"   : [(c.slug, c.label) for c in f.choices] }
                                              for f in self.fields] })
 
     @property
@@ -105,7 +106,7 @@ class Field(models.Model):
     type      = models.CharField(max_length=250, default="CharField")
     position  = models.IntegerField(editable=False)
     required  = models.BooleanField(default=True)
-    widget    = models.CharField(max_length=250, default="")
+    widget    = models.CharField(max_length=250, default="TextInput")
 
     def __init__(self, *args, **kwargs):
         super(Field, self).__init__(*args, **kwargs)
