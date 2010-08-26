@@ -49,6 +49,12 @@ DWF.formDesc = {
 
 // ### Helper Functions
 
+DWF.fieldWithLabelExists = function (label) {
+    var labels = DWF.fieldsList.find("li strong"), i = 0, len = labels.length;
+    for ( ; i < len; i++) if (labels[i].innerHTML === label) return true;
+    return false;
+};
+
 DWF.mirror = function (display, widget, callback) {
     widget.bind("keyup", function () {
         display.text(widget.val());
@@ -126,25 +132,29 @@ DWF.register("#/add-field", {
 
             DWF.prompt("Label:", function (label) {
                 if (label) {
-                    // TODO: make sure that the field does not already exist.
-                    DWF.addTransaction({
-                        action : "add field",
-                        label  : label
-                    });
-                    DWF.addTransaction({
-                        action : "change field type",
-                        label  : label,
-                        to     : fieldType
-                    });
-                    DWF.addTransaction({
-                        action : "change field widget",
-                        label  : label,
-                        to     : widget
-                    });
-                    DWF.renderFieldToForm({ label     : label,
-                                            widget    : widget,
-                                            help_text : "",
-                                            choices   : [] });
+                    if (DWF.fieldWithLabelExists(label)) {
+                        DWF.prompt("A field with that label already exists. Enter a new one:",
+                                   arguments.callee);
+                    } else {
+                        DWF.addTransaction({
+                            action : "add field",
+                            label  : label
+                        });
+                        DWF.addTransaction({
+                            action : "change field type",
+                            label  : label,
+                            to     : fieldType
+                        });
+                        DWF.addTransaction({
+                            action : "change field widget",
+                            label  : label,
+                            to     : widget
+                        });
+                        DWF.renderFieldToForm({ label     : label,
+                                                widget    : widget,
+                                                help_text : "",
+                                                choices   : [] });
+                    }
                 }
             });
         });
