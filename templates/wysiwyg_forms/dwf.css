@@ -12,17 +12,23 @@
     display: block;
 }
 
-#DWF-control-panel ul li {
+#DWF-control-panel ul#DWF-control-panel-tabs li {
     width: 30%;
     float: left;
     list-style-type: none;
     text-align: center;
 }
 
+#DWF-control-panel #DWF-add-field li button {
+    float: right;
+}
+
 #DWF-add-field,
 #DWF-field-settings,
 #DWF-form-settings {
     display: none;
+    clear: both;
+    margin: 2em;
 }
 
 #DWF-form {
