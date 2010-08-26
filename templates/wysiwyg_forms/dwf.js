@@ -1,5 +1,7 @@
 DWF = window.DWF || {};
 
+// ### Transactions
+
 (function () {
     var transactions = []
     DWF.getTransactions = function () {
@@ -11,6 +13,8 @@ DWF = window.DWF || {};
     };
 }());
 
+// TODO: Do I ever need this list after the first demo fields are rendered? Does
+// that mean it can be removed?
 DWF.fieldTypes = [
     ["BooleanField", "CheckboxInput", "True or false checkbox"],
     ["CharField", "TextInput", "Short text"],
@@ -29,7 +33,10 @@ DWF.fieldTypes = [
     ["URLField", "TextInput", "URL hyperlink"]
 ];
 
+// ### References to Common Elements
+
 DWF.fieldsList = $("#DWF-form-fields");
+DWF.demoFieldsList = $("#DWF-add-field ul");
 
 DWF.formName = {
     display : $("#DWF-form-name"),
@@ -40,12 +47,42 @@ DWF.formDesc = {
     input   : $("#DWF-form-settings-description")
 };
 
+// ### Helper Functions
+
 DWF.mirror = function (display, widget, callback) {
     widget.bind("keyup", function () {
         display.text(widget.val());
         callback && callback();
     });
 };
+
+DWF.prompt = function (msg, callback) {
+    // TODO: make a modal window in HTML.
+    var res = prompt(msg);
+    res = res ? res : false;
+    setTimeout(function () {
+        callback(res)
+    }, 20);
+};
+
+DWF.paragraphify = function (text) {
+    return (text = text.replace(/^\s+/, "").replace(/\s+$/, "")) ?
+        "<p>" + text.replace(/[\n\r]+/, "</p><p>") + "</p>" :
+        "";
+};
+
+DWF.renderFieldToForm = function (f) {
+    var attrs = { disabled: true },
+    renderedWidget = DWF.widgets[f.widget] ?
+        (new DWF.widgets[f.widget]()).render(f.name, attrs, f.choices) :
+        (new DWF.widgets.TextInput()).render(f.name, attrs);
+    return DWF.fieldsList.append("<li><label><strong>" + f.label + "</strong>"
+                                 + DWF.paragraphify(f.help_text) + renderedWidget
+                                 + "</label></li>");
+};
+
+
+// ### Implementation of Views
 
 DWF.register = (function () {
     var prev = {},
@@ -77,12 +114,44 @@ DWF.register = (function () {
     };
 }());
 
+// ### Views
+
 DWF.register("#/add-field", {
     setUp: function () {
         $("#DWF-add-field").show();
+        DWF.demoFieldsList.delegate("button", "click", function () {
+            var hiddenData = $(this).closest("li").find("input[type=hidden]").val().split("--"),
+            fieldType = hiddenData[0],
+            widget = hiddenData[1];
+
+            DWF.prompt("Label:", function (label) {
+                if (label) {
+                    // TODO: make sure that the field does not already exist.
+                    DWF.addTransaction({
+                        action : "add field",
+                        label  : label
+                    });
+                    DWF.addTransaction({
+                        action : "change field type",
+                        label  : label,
+                        to     : fieldType
+                    });
+                    DWF.addTransaction({
+                        action : "change field widget",
+                        label  : label,
+                        to     : widget
+                    });
+                    DWF.renderFieldToForm({ label     : label,
+                                            widget    : widget,
+                                            help_text : "",
+                                            choices   : [] });
+                }
+            });
+        });
     },
     tearDown: function () {
         $("#DWF-add-field").hide();
+        DWF.demoFieldsList.undelegate();
     }
 });
 
@@ -149,14 +218,22 @@ DWF.register("__init__", function () {
     DWF.formDesc.display.text(initialForm.description);
     DWF.formId = initialForm.id;
 
+    // Render all of the existing form fields.
     for (var i = 0, len = initialForm.fields.length; i < len; i++)
-        DWF.fieldsList.append( (function (f) {
-            var attrs = { disabled: true },
-            renderedWidget = DWF.widgets[f.widget] ?
-                (new DWF.widgets[f.widget]()).render(f.name, attrs, f.choices) :
-                (new DWF.widgets.TextInput()).render(f.name, attrs);
-            return "<li><label>" + f.label + renderedWidget + "</label></li>";
-        }(initialForm.fields[i])) );
+        DWF.renderFieldToForm(initialForm.fields[i]);
+
+    // Create all of the initial demo fields.
+    for (i = 0, len = DWF.fieldTypes.length; i < len; i++) {
+        DWF.demoFieldsList.append( (function (field, widget, description) {
+            var renderedWidget = (new DWF.widgets[widget]()).render("",
+                                                                    {},
+                                                                    [["one", "One"],
+                                                                     ["two", "Two"],
+                                                                     ["three", "Three"]]);
+            var hiddenData = "<input type='hidden' value='" + field + "--" + widget + "' />";
+            return "<li>" + hiddenData + "<button>Add</button>" + "<p>" + description + "</p>" + renderedWidget + "</li>";
+        }(DWF.fieldTypes[i][0], DWF.fieldTypes[i][1], DWF.fieldTypes[i][2])) );
+    }
 
     location.hash = "#/form-settings";
     $(window).hashchange();
