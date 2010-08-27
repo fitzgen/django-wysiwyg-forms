@@ -56,6 +56,7 @@ DWF.fieldWithLabelExists = function (label) {
 };
 
 DWF.mirror = function (display, widget, callback) {
+    widget.val(display.text());
     widget.bind("keyup", function () {
         display.text(widget.val());
         callback && callback();
@@ -71,20 +72,14 @@ DWF.prompt = function (msg, callback) {
     }, 20);
 };
 
-DWF.paragraphify = function (text) {
-    return (text = text.replace(/^\s+/, "").replace(/\s+$/, "")) ?
-        "<p>" + text.replace(/[\n\r]+/, "</p><p>") + "</p>" :
-        "";
-};
-
 DWF.renderFieldToForm = function (f) {
     var attrs = { disabled: true },
     renderedWidget = DWF.widgets[f.widget] ?
         (new DWF.widgets[f.widget]()).render(f.name, attrs, f.choices) :
         (new DWF.widgets.TextInput()).render(f.name, attrs);
     return DWF.fieldsList.append("<li class='DWF-field'><label><strong>" + f.label + "</strong>"
-                                 + DWF.paragraphify(f.help_text) + renderedWidget
-                                 + "</label></li>");
+                                 + "<div class='DWF-help-text'>" + f.help_text + "</div>"
+                                 + renderedWidget + "</label></li>");
 };
 
 
@@ -169,21 +164,31 @@ DWF.register("#/field-settings", (function () {
     var fieldSettings = $("#DWF-field-settings"),
     fieldExists = function (f) {
         return DWF.fieldsList.find(".DWF-field").index(f) >= 0;
-    };
+    },
+    oldLabel, oldHelpText, thisField;
     return {
         setUp: function () {
-            console.log("in setup");
             fieldSettings.show();
+
             if (DWF.activeField && fieldExists(DWF.activeField)) {
-                console.log("field exists");
-                // do stuff
-            } else {
-                console.log("doesn't exist");
+                // Bind thisField so that if a user clicks another field, we
+                // still have a reference to this one for the tearDown.
+                thisField = DWF.activeField;
+
+                fieldSettings.find("#DWF-edit-field").show();
+
+                // Set up the mirroring.
+                DWF.mirror(thisField.find("strong"),
+                           fieldSettings.find("#DWF-edit-field-label"));
+                DWF.mirror(thisField.find(".DWF-help-text"),
+                           fieldSettings.find("#DWF-edit-field-help-text"));
+                oldHelpText = thisField.find(".DWF-help-text").text();
+                oldLabel = thisField.find("strong").text();
+            }
+            else {
                 if (DWF.fieldsList.find(".DWF-field").length === 0) {
-                    console.log("no fields");
                     fieldSettings.find("#DWF-no-fields-msg").show();
                 } else {
-                    console.log("none selected");
                     fieldSettings.find("#DWF-none-selected-msg").show();
                 }
             }
@@ -192,6 +197,28 @@ DWF.register("#/field-settings", (function () {
             fieldSettings.hide();
             fieldSettings.find("#DWF-no-fields-msg").hide();
             fieldSettings.find("#DWF-none-selected-msg").hide();
+            fieldSettings.find("#DWF-edit-field").hide();
+
+            // Undo the mirroring.
+            fieldSettings.find("#DWF-edit-field-label").unbind("keyup");
+            fieldSettings.find("#DWF-edit-field-help-text").unbind("keyup");
+
+            // Create transactions for the label/help-text if either has
+            // changed.
+            if (thisField && oldLabel !== thisField.find("strong").text()) {
+                DWF.addTransaction({
+                    action : "rename field",
+                    label  : oldLabel,
+                    to     : thisField.find("strong").text()
+                });
+            }
+            if (thisField && oldHelpText !== thisField.find(".DWF-help-text").text()) {
+                DWF.addTransaction({
+                    action : "change help text",
+                    label  : thisField.find("strong").text(),
+                    to     : thisField.find(".DWF-help-text").text()
+                });
+            }
         }
     }
 }()));
@@ -295,8 +322,14 @@ DWF.register("__init__", function () {
         DWF.fieldsList.find(".DWF-field").removeClass("DWF-active-field");
         DWF.activeField = $(this);
         $(this).addClass("DWF-active-field");
+
+        var oldHash = location.hash;
         location.hash = "#/field-settings";
-        $(window).hashchange();
+
+        // Only explicitly trigger the hashchange event if the old hash and the
+        // new hash are the same, which is the only time it won't fire
+        // automatically.
+        oldHash === location.hash && $(window).hashchange();
     });
 
     location.hash = "#/form-settings";
