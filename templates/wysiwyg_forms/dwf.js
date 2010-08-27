@@ -210,9 +210,25 @@ DWF.register("#/form-settings", (function () {
 }()));
 
 DWF.register("#/save", {
-    setUp: function () {},
-    tearDown: function () {}
-})
+    setUp: function () {
+        var base = $("#DWF-base"),
+        numDots = 0;
+        base.html("<h1 style='text-align:center'>Saving</h1>");
+        setInterval(function () {
+            return numDots > 2 ?
+                base.text("Saving") :
+                base.text(base.text() + ".") && numDots++;
+        }, 250);
+        $.post("{% url wysiwyg_forms_apply_transactions %}",
+               { form_id: DWF.formId,
+                 transactions: JSON.stringify(DWF.getTransactions()) },
+               function () {
+                   location.reload();
+               });
+    },
+    tearDown: function () {
+    }
+});
 
 // By default, go to the form settings view
 DWF.register("__default__", {
