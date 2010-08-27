@@ -1,6 +1,8 @@
 from django.db import models
 from django import forms
 from django.template.defaultfilters import slugify
+from django.utils.datastructures import SortedDict
+from django.utils import simplejson as json
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
@@ -30,10 +32,24 @@ class Form(models.Model):
         super(Form, self).save(*args, **kwargs)
 
     def as_django_form(self):
-        properties = {}
+        properties = SortedDict()
         for field in self.fields:
             properties[field.slug] = field.as_django_form_field()
         return type(str(self.slug), (forms.Form,), properties)
+
+    def as_json(self):
+        # Don't use Django's serializers because it is just too cluttered.
+        return json.dumps({ "name"        : self.name,
+                            "id"          : self.id,
+                            "description" : self.description,
+                            "fields"      : [{ "label"     : f.label,
+                                               "name"      : f.slug,
+                                               "type"      : f.type,
+                                               "widget"    : f.widget,
+                                               "help_text" : f.help_text,
+                                               "required"  : f.required,
+                                               "choices"   : [(c.slug, c.label) for c in f.choices] }
+                                             for f in self.fields] })
 
     @property
     def fields(self):
@@ -90,7 +106,7 @@ class Field(models.Model):
     type      = models.CharField(max_length=250, default="CharField")
     position  = models.IntegerField(editable=False)
     required  = models.BooleanField(default=True)
-    widget    = models.CharField(max_length=250, default="")
+    widget    = models.CharField(max_length=250, default="TextInput")
 
     def __init__(self, *args, **kwargs):
         super(Field, self).__init__(*args, **kwargs)
@@ -127,6 +143,18 @@ class Field(models.Model):
             self._choices = list(self._choice_set.all().order_by("position"))
         return self._choices
 
+    def get_choice(self, label):
+        """
+        Returns the choice whose label is `label`, otherwise throws
+        `ChoiceDoesNotExist`.
+        """
+        try:
+            return (c for c in self.choices if c.label == label).next()
+        except StopIteration:
+            raise ChoiceDoesNotExist(
+                "Tried to find the choice '%s' but it doesn't exist." % label
+                )
+
     def add_choice(self, choice_label):
         if not field_type_has_choices(self.type):
             raise WysiwygFormsException(
@@ -147,17 +175,18 @@ class Field(models.Model):
                 return choice
 
     def remove_choice(self, choice_label):
-        try:
-            choice = (c for c in self.choices if c.label == choice_label).next()
-        except StopIteration:
-            raise ChoiceDoesNotExist(
-                "Tried to remove the choice '%s' but it doesn't exist." % choice_label
-                )
-        else:
-            self.choices.remove(choice)
-            self._ensure_choice_positions()
-            choice.delete()
-            return choice
+        choice = self.get_choice(choice_label)
+        self.choices.remove(choice)
+        self._ensure_choice_positions()
+        choice.delete()
+        return choice
+
+    def move_choice(self, choice_label, new_index):
+        choice = self.get_choice(choice_label)
+        old_index = self.choices.index(choice)
+        self.choices.insert(new_index, self.choices.pop(old_index))
+        self._ensure_choice_positions()
+        return choice
 
 class Choice(models.Model):
     field    = models.ForeignKey(Field, related_name="_choice_set")

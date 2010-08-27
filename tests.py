@@ -1,5 +1,7 @@
 from django import forms
+from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils import simplejson as json
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
@@ -10,6 +12,16 @@ class BaseTestCase(TestCase):
     def setUp(self):
         self.form = Form.objects.create(name="Test Form",
                                         description="A test form")
+
+    def get(self, url_name, *args, **kwargs):
+        return self.client.get(reverse(url_name, args=args, kwargs=kwargs))
+
+    def post(self, url_name, *args, **kwargs):
+        data = kwargs.pop("data", None)
+        extra = kwargs.pop("extra", {})
+        return self.client.post(reverse(url_name, args=args, kwargs=kwargs),
+                                data,
+                                **extra)
 
 class AddRemoveFieldTestCase(BaseTestCase):
     def test_add_field(self):
@@ -116,6 +128,44 @@ class ModelToDjangoFormTestCase(BaseTestCase):
         self.assertEqual(len(TestForm().fields), len(self.form.fields),
                          "The django form should have same number of fields as the form model instance.")
 
+class ApplyTransactionsViewTestCase(BaseTestCase):
+    def test_apply_transactions(self):
+        transactions = json.dumps([{ "action"       : "add field",
+                                     "label"        : "hello" },
+                                   { "action"       : "change field type",
+                                     "label"        : "hello",
+                                     "to"           : "MultipleChoiceField" },
+                                   { "action"       : "add choice",
+                                     "label"        : "hello",
+                                     "choice_label" : "uno" },
+                                   { "action"       : "add choice",
+                                     "label"        : "hello",
+                                     "choice_label" : "dos" },
+                                   { "action"       : "add field",
+                                     "label"        : "hola" },
+                                   { "action"       : "change name",
+                                     "to"           : "my form"}])
+
+        response = self.post("wysiwyg_forms_apply_transactions",
+                             data={ "transactions" : transactions,
+                                    "form_id"      : self.form.id})
+        self.assertEqual(response.status_code, 200)
+
+        # Get the latest form instance
+        self.form = Form.objects.get(id=self.form.id)
+
+        self.assertEqual(len(self.form.fields), 2)
+        self.assertEqual(len(self.form.get_field("hello").choices), 2)
+
+        # TODO: Test the response JSON
+
+class NewFormViewTestCase(BaseTestCase):
+    def test_a_new_form_is_created(self):
+        num_forms = Form.objects.all().count()
+        response = self.get("wysiwyg_forms_new_form")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(num_forms + 1, Form.objects.all().count())
+
 class TransactionsTestCase(BaseTestCase):
     def setUp(self):
         super(TransactionsTestCase, self).setUp()
@@ -190,6 +240,14 @@ class TransactionsTestCase(BaseTestCase):
         transaction.apply_to(self.form)
         self.assertTrue(isinstance(self.field.as_django_form_field(),
                                    forms.fields.BooleanField))
+
+    def test_change_field_widget(self):
+        transaction = Transaction(action="change field widget",
+                                  label="Happy and you know it?",
+                                  to="RadioSelect")
+        transaction.apply_to(self.form)
+        self.assertTrue(isinstance(self.form.get_field("Happy and you know it?").as_django_form_field().widget,
+                                   forms.widgets.RadioSelect))
 
     def test_add_choice(self):
         num_choices = len(self.field.choices)
