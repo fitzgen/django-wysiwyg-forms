@@ -35,3 +35,25 @@
     width: 60%;
     float: right;
 }
+
+#DWF-form-fields {
+    margin: 0;
+    padding: 0;
+}
+
+li.DWF-field {
+    padding: 1em;
+    cursor: pointer;
+}
+
+li.DWF-field * {
+    cursor: pointer;
+}
+
+.DWF-hover-field {
+    background-color: #FFC;
+}
+
+.DWF-active-field {
+    background-color: #FFA;
+}

@@ -82,7 +82,7 @@ DWF.renderFieldToForm = function (f) {
     renderedWidget = DWF.widgets[f.widget] ?
         (new DWF.widgets[f.widget]()).render(f.name, attrs, f.choices) :
         (new DWF.widgets.TextInput()).render(f.name, attrs);
-    return DWF.fieldsList.append("<li><label><strong>" + f.label + "</strong>"
+    return DWF.fieldsList.append("<li class='DWF-field'><label><strong>" + f.label + "</strong>"
                                  + DWF.paragraphify(f.help_text) + renderedWidget
                                  + "</label></li>");
 };
@@ -260,6 +260,21 @@ DWF.register("__init__", function () {
             return "<li>" + hiddenData + "<button>Add</button>" + "<p>" + description + "</p>" + renderedWidget + "</li>";
         }(DWF.fieldTypes[i][0], DWF.fieldTypes[i][1], DWF.fieldTypes[i][2])) );
     }
+
+    // Manage the hover/selection of fields.
+    DWF.fieldsList.delegate(".DWF-field", "mouseenter", function () {
+        !($(this).hasClass("DWF-active-field")) && $(this).addClass("DWF-hover-field");
+    });
+    DWF.fieldsList.delegate(".DWF-field", "mouseleave", function () {
+        $(this).removeClass("DWF-hover-field");
+    });
+
+    DWF.fieldsList.delegate(".DWF-field", "click", function () {
+        DWF.fieldsList.find(".DWF-field").removeClass("DWF-active-field");
+        DWF.activeField = $(this);
+        $(this).addClass("DWF-active-field");
+        location.hash = "#/field-settings";
+    });
 
     location.hash = "#/form-settings";
     $(window).hashchange();
