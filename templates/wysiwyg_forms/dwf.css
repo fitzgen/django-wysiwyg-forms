@@ -57,3 +57,8 @@ li.DWF-field * {
 .DWF-active-field {
     background-color: #FFA;
 }
+
+#DWF-no-fields-msg,
+#DWF-none-selected-msg {
+    display: none;
+}

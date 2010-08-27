@@ -165,14 +165,36 @@ DWF.register("#/add-field", {
     }
 });
 
-DWF.register("#/field-settings", {
-    setUp: function () {
-        $("#DWF-field-settings").show();
-    },
-    tearDown: function () {
-        $("#DWF-field-settings").hide();
+DWF.register("#/field-settings", (function () {
+    var fieldSettings = $("#DWF-field-settings"),
+    fieldExists = function (f) {
+        return DWF.fieldsList.find(".DWF-field").index(f) >= 0;
+    };
+    return {
+        setUp: function () {
+            console.log("in setup");
+            fieldSettings.show();
+            if (DWF.activeField && fieldExists(DWF.activeField)) {
+                console.log("field exists");
+                // do stuff
+            } else {
+                console.log("doesn't exist");
+                if (DWF.fieldsList.find(".DWF-field").length === 0) {
+                    console.log("no fields");
+                    fieldSettings.find("#DWF-no-fields-msg").show();
+                } else {
+                    console.log("none selected");
+                    fieldSettings.find("#DWF-none-selected-msg").show();
+                }
+            }
+        },
+        tearDown: function () {
+            fieldSettings.hide();
+            fieldSettings.find("#DWF-no-fields-msg").hide();
+            fieldSettings.find("#DWF-none-selected-msg").hide();
+        }
     }
-});
+}()));
 
 DWF.register("#/form-settings", (function () {
     var oldName, oldDesc;
@@ -274,6 +296,7 @@ DWF.register("__init__", function () {
         DWF.activeField = $(this);
         $(this).addClass("DWF-active-field");
         location.hash = "#/field-settings";
+        $(window).hashchange();
     });
 
     location.hash = "#/form-settings";
