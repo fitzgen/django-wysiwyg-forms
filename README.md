@@ -3,7 +3,7 @@
 *Note: this project is not production ready at this time. Stay tuned for
  updates.*
 
-### Install:
+## Install:
 
     git clone git://github.com/fitzgen/django-wysiwyg-forms.git
     cd django-wysiwyg-forms/
@@ -22,3 +22,7 @@ Include the urls:
         (r"^wysiwyg_forms/", include("wysiwyg_forms.urls")),
         # ...
     )
+
+## TODO:
+
+* Scrap existing frontend JavaScript and restart using Backbone
