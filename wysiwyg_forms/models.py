@@ -22,7 +22,7 @@ class Form(models.Model):
         Iterates through self.fields and makes sure that they have the correct
         position attribute.
         """
-        for f, i in zip(self.fields, range(len(self.fields))):
+        for i, f in enumerate(self.fields):
             f.position = i
 
     def save(self, *args, **kwargs):
@@ -46,7 +46,7 @@ class Form(models.Model):
                                                "name"      : f.slug,
                                                "type"      : f.type,
                                                "widget"    : f.widget,
-                                               "help_text" : f.help_text,
+                                               "help"      : f.help_text,
                                                "required"  : f.required,
                                                "choices"   : [(c.slug, c.label) for c in f.choices] }
                                              for f in self.fields] })
@@ -117,7 +117,7 @@ class Field(models.Model):
         Iterates through self.choices and makes sure that they have the correct
         position attribute.
         """
-        for c, i in zip(self.choices, range(len(self.choices))):
+        for i, c in enumerate(self.choices):
             c.position = i
 
     def save(self, *args, **kwargs):
