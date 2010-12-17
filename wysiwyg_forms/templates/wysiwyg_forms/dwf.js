@@ -1,5 +1,9 @@
 {% include "wysiwyg_forms/jquery.js" %}
 
+{% include "wysiwyg_forms/jquery.ui.core.js" %}
+{% include "wysiwyg_forms/jquery.ui.widget.js" %}
+{% include "wysiwyg_forms/jquery.ui.tabs.js" %}
+
 {% include "wysiwyg_forms/underscore.js" %}
 
 {% include "wysiwyg_forms/backbone.js" %}

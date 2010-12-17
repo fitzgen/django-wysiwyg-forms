@@ -1,8 +1,45 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="{% url wysiwyg_forms_dwf_css %}" />
   </head>
   <body>
+
+    <div id="control-panel">
+      <ul>
+        <li><a href="#add-field/">Add a Field</a></li>
+        <li><a href="#field-settings/">Field Settings</a></li>
+        <li><a href="#form-settings/">Form Settings</a></li>
+      </ul>
+      <div id="add-field">
+      </div>
+      <div id="field-settings">
+      </div>
+      <div id="form-settings">
+        <form>
+          <label for="form-name-input">
+            Name
+            <input type="text" id="form-name-input" />
+          </label>
+          <label for="form-description-input">
+            Description
+            <textarea id="form-description-input"></textarea>
+          </label>
+          <input type="submit" value="Save Form" />
+        </form>
+      </div>
+    </div>
+
+    <div id="preview">
+      <h1 id="form-name"></h1>
+      <p id="form-description"></p>
+    </div>
+
+    <script type="application/json" id="form-json">
+      {{form|safe}}
+    </script>
+
     <script type="text/javascript" src="{% url wysiwyg_forms_dwf_js %}" /></script>
+
   </body>
 </html>
