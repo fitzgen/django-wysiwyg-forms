@@ -9,7 +9,7 @@
 var
 
 // Our namespace.
-dwf = window.dwf || {},
+dwf = window.dwf = window.dwf || {},
 
 // Grab local copy of `undefined` which cannot be messed with if someone does
 // `undefined = true` or something.
