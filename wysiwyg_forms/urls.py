@@ -9,11 +9,8 @@ urlpatterns = patterns(
     url(r"^$", Edit, name="wysiwyg_forms_new_form"),
     url(r"^(\d+)/$", Edit, name="wysiwyg_forms_edit_form"),
 
-    # This file cannot be {% included %} because it contains "</script>" in a
-    # string which breaks the rest of the JS.
-    url(r"media/jquery.ba-hashchange.js",
-        direct_to_template,
-        { "template" : "wysiwyg_forms/jquery.ba-hashchange.min.js",
-          "mimetype" : "text/javascript" },
-        name="wysiwyg_forms_media_hashchange_js"),
+    url(r"^dwf.js$", direct_to_template,
+        { "template": "wysiwyg_forms/dwf.js",
+          "mimetype": "text/javascript" },
+        name="wysiwyg_forms_dwf_js")
 )
