@@ -1,0 +1,2 @@
+{# TODO: have some better way of loading the theme css that will get the images too #}
+{% include "wysiwyg_forms/themes/flick/jquery-ui-1.8.7.css" %}
