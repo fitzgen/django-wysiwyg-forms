@@ -180,6 +180,8 @@ dwf.views.CheckboxSelectMultiple = MultipleInputSelect.extend({
 dwf.views.ControlPanel = Backbone.View.extend({
 
     events: {
+        // TODO: Bind to "change" events instead, which is going to require
+        // binding by hand rather than using Backbone's built in delegation.
         "keyup #form-name-input": "saveName",
         "keyup #form-description-input": "saveDescription"
     },
@@ -202,15 +204,19 @@ dwf.views.ControlPanel = Backbone.View.extend({
     },
 
     saveName: function (event) {
+        var name = this.nameInput.val();
         this.form.set({
-            name: this.nameInput.val()
+            name: name
         });
+        this.form.trigger("transaction:change-name", name);
     },
 
     saveDescription: function () {
+        var desc = this.descriptionInput.val();
         this.form.set({
-            description: this.descriptionInput.val()
+            description: desc
         });
+        this.form.trigger("transaction:change-description", desc);
     }
 
 });

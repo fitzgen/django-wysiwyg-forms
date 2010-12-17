@@ -8,6 +8,10 @@
 
 dwf.form = new dwf.models.Form($.parseJSON($("#form-json").html()));
 
+dwf.transactionManager = new dwf.transactions.TransactionManager({
+    form: dwf.form
+});
+
 dwf.controlPanel = new dwf.views.ControlPanel({
     form: dwf.form,
     el: $("#control-panel")

@@ -20,6 +20,8 @@
 
     {% include "wysiwyg_forms/dwf.controllers.js" %}
 
+    {% include "wysiwyg_forms/dwf.transactions.js" %}
+
     {% include "wysiwyg_forms/dwf.outro.js" %}
 
 }());
