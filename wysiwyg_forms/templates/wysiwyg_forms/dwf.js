@@ -16,6 +16,8 @@
 
     {% include "wysiwyg_forms/dwf.models.js" %}
 
+    {% include "wysiwyg_forms/dwf.widgets.js" %}
+
     {% include "wysiwyg_forms/dwf.views.js" %}
 
     {% include "wysiwyg_forms/dwf.controllers.js" %}
