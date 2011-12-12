@@ -50,11 +50,12 @@ li.DWF-field * {
     cursor: pointer;
 }
 
-.DWF-hover-field {
+.DWF-field:hover {
     background-color: #FFC;
 }
 
-.DWF-active-field {
+.DWF-active-field,
+.DWF-active-field:hover {
     background-color: #FFA;
 }
 

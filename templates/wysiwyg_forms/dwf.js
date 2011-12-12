@@ -2,50 +2,50 @@ DWF = window.DWF || {};
 
 // ### Transactions
 
-(function () {
-    var transactions = []
-    DWF.getTransactions = function () {
-        return transactions.slice(0); // slice to make a shallow copy
-    };
+// (function () {
+//     var transactions = []
+//     DWF.getTransactions = function () {
+//         return transactions.slice(0); // slice to make a shallow copy
+//     };
 
-    DWF.addTransaction = function (t) {
-        transactions.push(t);
-    };
-}());
+//     DWF.addTransaction = function (t) {
+//         transactions.push(t);
+//     };
+// }());
 
-// TODO: Do I ever need this list after the first demo fields are rendered? Does
-// that mean it can be removed?
-DWF.fieldTypes = [
-    ["BooleanField", "CheckboxInput", "True or false checkbox"],
-    ["CharField", "TextInput", "Short text"],
-    ["CharField", "Textarea", "Large text"],
-    ["ChoiceField", "Select", "Select single option"],
-    ["DateField", "DateInput", "Date"],
-    ["DateTimeField", "DateTimeInput", "Date and Time"],
-    ["EmailField", "TextInput", "Email"],
-    ["FileField", "FileInput", "File Upload"],
-    ["FloatField", "TextInput", "Number (with or without decimal points)"],
-    ["ImageField", "FileInput", "Image upload"],
-    ["IntegerField", "TextInput", "Number (without decimal points)"],
-    ["IPAddressField", "TextInput", "IP Address"],
-    ["MultipleChoiceField", "SelectMultiple", "Select multiple options"],
-    ["TimeField", "TextInput", "Time"],
-    ["URLField", "TextInput", "URL hyperlink"]
-];
+// // TODO: Do I ever need this list after the first demo fields are rendered? Does
+// // that mean it can be removed?
+// DWF.fieldTypes = [
+//     ["BooleanField", "CheckboxInput", "True or false checkbox"],
+//     ["CharField", "TextInput", "Short text"],
+//     ["CharField", "Textarea", "Large text"],
+//     ["ChoiceField", "Select", "Select single option"],
+//     ["DateField", "DateInput", "Date"],
+//     ["DateTimeField", "DateTimeInput", "Date and Time"],
+//     ["EmailField", "TextInput", "Email"],
+//     ["FileField", "FileInput", "File Upload"],
+//     ["FloatField", "TextInput", "Number (with or without decimal points)"],
+//     ["ImageField", "FileInput", "Image upload"],
+//     ["IntegerField", "TextInput", "Number (without decimal points)"],
+//     ["IPAddressField", "TextInput", "IP Address"],
+//     ["MultipleChoiceField", "SelectMultiple", "Select multiple options"],
+//     ["TimeField", "TextInput", "Time"],
+//     ["URLField", "TextInput", "URL hyperlink"]
+// ];
 
-// ### References to Common Elements
+// // ### References to Common Elements
 
-DWF.fieldsList = $("#DWF-form-fields");
-DWF.demoFieldsList = $("#DWF-add-field ul");
+// DWF.fieldsList = $("#DWF-form-fields");
+// DWF.demoFieldsList = $("#DWF-add-field ul");
 
-DWF.formName = {
-    display : $("#DWF-form-name"),
-    input   : $("#DWF-form-settings-name")
-};
-DWF.formDesc = {
-    display : $("#DWF-form-description"),
-    input   : $("#DWF-form-settings-description")
-};
+// DWF.formName = {
+//     display : $("#DWF-form-name"),
+//     input   : $("#DWF-form-settings-name")
+// };
+// DWF.formDesc = {
+//     display : $("#DWF-form-description"),
+//     input   : $("#DWF-form-settings-description")
+// };
 
 // ### Helper Functions
 
