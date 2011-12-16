@@ -111,7 +111,7 @@ define(function (require, exports, module) {
                 messages.removeMessage(msgId);
                 var d = new Date();
                 messages.success('Successfully saved at '
-                                 + (d.getHours() % 12)
+                                 + ((d.getHours() % 12) || 12)
                                  + ':' + d.getMinutes());
             },
             error: function () {
