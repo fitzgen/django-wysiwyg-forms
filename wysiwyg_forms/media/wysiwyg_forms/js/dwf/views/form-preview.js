@@ -25,7 +25,7 @@ define(function (require, exports, module) {
             me.activeField = $(this);
             me.activeField.addClass('DWF-active-field');
 
-            lib.activateField(me.activeField.find('label').text());
+            lib.activateField(me.activeField.find('label > strong').text());
         });
     };
 

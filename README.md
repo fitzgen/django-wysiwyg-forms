@@ -27,8 +27,6 @@ Include the urls:
 
 ## TODO
 
-* Figure out why some fields aren't recognized to be active
-
 * Add required field management to the UI
 
 * Add choices to the UI
