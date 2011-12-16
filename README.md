@@ -27,8 +27,6 @@ Include the urls:
 
 ## TODO
 
-* Apply selected patches from other branches
-
 * Initializing exisitng form fields in the UI
 
 * Add required field management to the UI
