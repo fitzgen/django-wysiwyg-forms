@@ -8,6 +8,12 @@
     float: left;
 }
 
+#DWF-control-panel input,
+#DWF-control-panel textarea {
+    display: block;
+    margin-bottom: 1em;
+}
+
 #DWF-control-panel label {
     display: block;
 }
