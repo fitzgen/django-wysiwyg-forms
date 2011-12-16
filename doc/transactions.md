@@ -23,7 +23,7 @@ instance in question. Then the server sends back *it's* updated "master"
 representation of the form to the client (which might include someone else's
 parallel edits). The client takes what the server sends it and completely
 re-renders as if starting from scratch. Conflicts won't be considered at this
-point of the project.
+point of the project, (that would be moving towards the realm of Operational Transformation).
 
 Benefits, as I see them:
 
@@ -43,11 +43,6 @@ Benefits, as I see them:
 
 ## The Transaction Language
 
-I am trying to formalize and document all permutations of the language for
-transactions. Once all permutations are documented, it will be easy to write
-unit tests for interpreting them on the server side and generating them on the
-client side.
-
 ### Change Name
 
     action: "change name"
@@ -61,8 +56,8 @@ client side.
 ### Add Field
 
 By default, new fields are initialized to CharFields and help_text is "". To
-change them requires a separate transaction, so this one doesn't need to nkow
-anything abuot that.
+change them requires a separate transaction, so this one doesn't need to know
+anything about that.
 
     action: "add field"
     label: The new field's label
@@ -95,6 +90,12 @@ anything abuot that.
     action: "change field type"
     label: the field's label
     to: The new field type
+
+### Change Field Required
+
+    action: "change field required"
+    label: the field's label
+    to: true if the field is a required field, false otherwise
 
 ### Add Choice
 

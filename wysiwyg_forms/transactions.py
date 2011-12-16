@@ -98,6 +98,10 @@ def apply_to(t, form):
 def apply_to(t, form):
     form.get_field(t.label).widget = t.to
 
+@Transaction.register("change field required")
+def apply_to(t, form):
+    form.get_field(t.label).required = t.to
+
 @Transaction.register("add choice")
 def apply_to(t, form):
     form.get_field(t.label).add_choice(t.choice_label)

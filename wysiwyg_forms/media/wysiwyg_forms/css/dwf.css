@@ -64,6 +64,11 @@ li.DWF-field * {
     display: none;
 }
 
+.DWF-field-required {
+    text-weight: bold;
+    color: #FF0000;
+}
+
 /* Messages */
 
 #DWF-messages {

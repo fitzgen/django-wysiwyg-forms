@@ -50,6 +50,10 @@ define(function (require, exports, module) {
             return form.activeField.helpText();
         },
 
+        getActiveFieldRequired: function () {
+            return form.activeField.required();
+        },
+
         updateActiveFieldLabel: function (val) {
             form.activeField.label(val);
             formPreview.displayActiveFieldLabel(val);
@@ -58,6 +62,11 @@ define(function (require, exports, module) {
         updateActiveFieldHelpText: function (val) {
             form.activeField.helpText(val);
             formPreview.displayActiveFieldHelpText(val);
+        },
+
+        updateActiveFieldRequired: function (val) {
+            form.activeField.required(val);
+            formPreview.displayActiveFieldRequired(val);
         },
 
         getFormName: function () {

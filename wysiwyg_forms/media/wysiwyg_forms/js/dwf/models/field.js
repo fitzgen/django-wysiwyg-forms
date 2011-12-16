@@ -27,6 +27,14 @@ define(function (require, exports, module) {
         });
     });
 
+    Field.prototype.required = util.getSetter('_required', function (val) {
+        transactions.addTransaction({
+            action : "change field required",
+            label  : this.label(),
+            to     : Boolean(val)
+        });
+    });
+
     Field.prototype.widget = util.getSetter('_widget', function (val) {
         // TODO: transaction here
     });

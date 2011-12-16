@@ -27,7 +27,7 @@ Include the urls:
 
 ## TODO
 
-* Add required field management to the UI
+* Add deleting fields to the UI
 
 * Add choices to the UI
 
@@ -35,8 +35,8 @@ Include the urls:
 
 * Changing the type and widget of a field in the UI
 
-* Make the prompt a modal html window in the UI
-
 * Start using Django 1.3's class based views
 
 * Start using django.contrib.staticfiles in Django 1.3
+
+* Make the prompt a modal html window in the UI
