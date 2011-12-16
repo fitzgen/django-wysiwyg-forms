@@ -28,8 +28,6 @@ Include the urls:
 TODO
 ----
 
-* Docs for the UI code
-
 * Apply selected patches from other branches
 
 * Initializing exisitng form fields in the UI
