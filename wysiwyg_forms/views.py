@@ -8,7 +8,7 @@ from django.utils import simplejson as json
 from .models import Form
 from .transactions import Transaction
 
-__all__ = ("")
+__all__ = ("ApplyTransactions", "Edit")
 
 class WysiwygFormView(object):
     def __new__(cls, request, *args, **kwargs):
@@ -45,13 +45,6 @@ class WysiwygFormView(object):
         """
         return True
 
-def deunicode(d):
-    """
-    Make keys in a dict a normal str.
-    """
-    for k in d.keys():
-        d[str(k)] = d.pop(k)
-
 class ApplyTransactions(WysiwygFormView):
     mimetype = "application/json"
 
@@ -65,9 +58,6 @@ class ApplyTransactions(WysiwygFormView):
         else:
             form = Form.objects.get(id=form_id)
             for t in json.loads(request.POST.get("transactions", "[]")):
-                # json.loads makes the keys in the dict be unicode, which causes
-                # __init__ to fail.
-                deunicode(t)
                 Transaction(**t).apply_to(form)
             form.save()
             return form.as_json()
