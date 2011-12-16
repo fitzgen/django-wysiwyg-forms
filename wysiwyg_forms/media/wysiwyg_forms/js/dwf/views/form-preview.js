@@ -55,14 +55,14 @@ define(function (require, exports, module) {
         }
     };
 
-    FormPreview.prototype.addField = function (label, widget, helpText, choices) {
+    FormPreview.prototype.addField = function (field) {
         var attrs = { disabled: true };
-        var renderedWidget = widgets[widget] ?
-            (new widgets[widget]()).render(null, attrs, choices) :
+        var renderedWidget = widgets[field.widget()] ?
+            (new widgets[field.widget()]()).render(null, attrs, field.choices()) :
             (new widgets.TextInput()).render(null, attrs);
         this._elements.fields.append(
-            "<li class='DWF-field'><label><strong>" + label + "</strong>"
-                + "<div class='DWF-help-text'>" + helpText + "</div>"
+            "<li class='DWF-field'><label><strong>" + field.label() + "</strong>"
+                + "<div class='DWF-help-text'>" + field.helpText() + "</div>"
                 + renderedWidget + "</label></li>"
         );
     };

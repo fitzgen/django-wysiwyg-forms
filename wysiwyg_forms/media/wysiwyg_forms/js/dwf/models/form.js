@@ -39,14 +39,15 @@ define(function (require, exports, module) {
     };
 
     Form.prototype.addField = function (label, fieldType, widget) {
-        this._fields.push(new Field({
+        var f = new Field({
             label: label,
             type: fieldType,
             widget: widget,
             help_text: '',
             required: true,
             choices: []
-        }));
+        });
+        this._fields.push(f);
 
         transactions.addTransaction({
             action : "add field",
@@ -62,6 +63,8 @@ define(function (require, exports, module) {
             label  : label,
             to     : widget
         });
+
+        return f;
     };
 
     Form.prototype.getFieldByLabel = function (label) {
@@ -71,5 +74,16 @@ define(function (require, exports, module) {
             }
         }
         return null;
+    };
+
+    // Should guarantee order of the fields.
+    Form.prototype.eachField = function (cb, ctx) {
+        var i = 0;
+        var len = this._fields.length;
+        var ret = true;
+        ctx = ctx || {};
+        for ( ; i < len && ret !== false; i ++ ) {
+            ret = cb.call(ctx, this._fields[i], i);
+        }
     };
 });

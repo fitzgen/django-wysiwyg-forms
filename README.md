@@ -27,7 +27,7 @@ Include the urls:
 
 ## TODO
 
-* Initializing exisitng form fields in the UI
+* Figure out why some fields aren't recognized to be active
 
 * Add required field management to the UI
 

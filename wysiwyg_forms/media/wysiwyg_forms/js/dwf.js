@@ -27,8 +27,8 @@ define(function (require, exports, module) {
                         util.prompt("A field with that label already exists. Enter a new one:",
                                     arguments.callee);
                     } else {
-                        form.addField(label, fieldType, widget);
-                        formPreview.addField(label, widget, "", []);
+                        var f = form.addField(label, fieldType, widget);
+                        formPreview.addField(f);
                     }
                 }
             });
@@ -91,7 +91,9 @@ define(function (require, exports, module) {
     // Have the form preview display the initial form data.
     formPreview.displayFormName(form.name());
     formPreview.displayFormDescription(form.description());
-    // TODO: initialize the fields
+    form.eachField(function (field, i) {
+        formPreview.addField(field);
+    });
 
     messages.activate(document.body);
 

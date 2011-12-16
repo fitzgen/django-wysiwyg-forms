@@ -26,4 +26,12 @@ define(function (require, exports, module) {
             to     : val
         });
     });
+
+    Field.prototype.widget = util.getSetter('_widget', function (val) {
+        // TODO: transaction here
+    });
+
+    Field.prototype.choices = util.getSetter('_choices', function (val) {
+        // TODO: transaction here or maybe add Choice model
+    });
 });
