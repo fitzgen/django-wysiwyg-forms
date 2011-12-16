@@ -6,7 +6,7 @@ define(function (require, exports, module) {
     var errorSaveHook;
     var target;
     var formId;
-    var TIMER_LENGTH = 60000;
+    var TIMER_LENGTH = 30000;
 
     exports.addTransaction = function (t) {
         transactions.push(t);

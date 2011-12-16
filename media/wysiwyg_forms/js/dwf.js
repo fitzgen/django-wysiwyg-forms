@@ -6,6 +6,7 @@ define(function (require, exports, module) {
     var transactions = require('dwf/transactions');
     var ControlPanel = require('dwf/views/control-panel').ControlPanel;
     var FormPreview  = require('dwf/views/form-preview').FormPreview;
+    var Messages     = require('dwf/views/messages').Messages;
     var Form         = require('dwf/models/form').Form;
 
     // Models
@@ -14,8 +15,11 @@ define(function (require, exports, module) {
     // Views
     var controlPanel = new ControlPanel();
     var formPreview  = new FormPreview();
+    var messages     = new Messages();
 
-    controlPanel.activate($('#DWF-base')[0], {
+    var base = document.getElementById('DWF-base');
+
+    controlPanel.activate(base, {
         addField: function (fieldType, widget) {
             util.prompt("Label:", function (label) {
                 if (label) {
@@ -72,10 +76,12 @@ define(function (require, exports, module) {
         updateFormDescription: function (val) {
             form.description(val);
             formPreview.displayFormDescription(val);
-        }
+        },
+
+        saveNow: util.bind(transactions.saveNow, transactions)
     });
 
-    formPreview.activate($('#DWF-base')[0], {
+    formPreview.activate(base, {
         activateField: function (label) {
             form.activeField = form.getFieldByLabel(label);
             controlPanel.openFieldSettingsTab();
@@ -87,15 +93,32 @@ define(function (require, exports, module) {
     formPreview.displayFormDescription(form.description());
     // TODO: initialize the fields
 
+    messages.activate(document.body);
+
     // Start saving the form about once every minute.
-    transactions.startAutoSaveLoop({
-        target: document.getElementById('save-target').textContent,
-        formId: form.id(),
-        preSave: function () {
-        },
-        postSave: function () {
-        },
-        error: function () {
-        }
-    });
+    transactions.startAutoSaveLoop((function () {
+        var msgId;
+
+        return {
+            target: document.getElementById('save-target').textContent,
+            formId: form.id(),
+            preSave: function () {
+                controlPanel.disableSave();
+                msgId = messages.info('Saving...');
+            },
+            postSave: function () {
+                controlPanel.enableSave();
+                messages.removeMessage(msgId);
+                var d = new Date();
+                messages.success('Successfully saved at '
+                                 + (d.getHours() % 12)
+                                 + ':' + d.getMinutes());
+            },
+            error: function () {
+                controlPanel.enableSave();
+                messages.removeMessage(msgId);
+                messages.error('There was an error saving.');
+            }
+        };
+    }()));
 });

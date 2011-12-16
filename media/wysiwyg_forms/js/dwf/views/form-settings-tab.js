@@ -20,21 +20,13 @@ define(function (require, exports, module) {
             .keyup(updateFormDescription)
             .change(updateFormDescription);
 
-        // TODO: saving
-        // var base = $("#DWF-base"),
-        // numDots = 0;
-        // base.html("<h1 style='text-align:center'>Saving</h1>");
-        // setInterval(function () {
-        //     return numDots > 2 ?
-        //         base.text("Saving") :
-        //         base.text(base.text() + ".") && numDots++;
-        // }, 250);
-        // $.post("{% url wysiwyg_forms_apply_transactions %}",
-        //        { form_id: DWF.formId,
-        //          transactions: JSON.stringify(transactions.getTransactions()) },
-        //        function () {
-        //            location.reload();
-        //        });
+        $(this.element)
+            .find('button')
+            .click(function () {
+                if ( ! this.disabled ) {
+                    lib.saveNow();
+                }
+            });
     };
 
     FormSettingsTab.prototype.show = function () {
@@ -46,5 +38,19 @@ define(function (require, exports, module) {
         $(this.element)
             .find('#DWF-form-settings-description')
             .val(this.lib.getFormDescription());
+    };
+
+    FormSettingsTab.prototype.disableSave = function () {
+        $(this.element)
+            .find('button')
+            .attr('disabled', true)
+            .text('Saving...');
+    };
+
+    FormSettingsTab.prototype.enableSave = function () {
+        $(this.element)
+            .find('button')
+            .removeAttr('disabled')
+            .text('Save');
     };
 });

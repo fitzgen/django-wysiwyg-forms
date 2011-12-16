@@ -28,9 +28,7 @@ Include the urls:
 TODO
 ----
 
-* Saving forms from the UI
-
-* Message manager in the UI
+* Docs for the UI code
 
 * Apply selected patches from other branches
 

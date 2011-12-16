@@ -59,4 +59,12 @@ define(function (require, exports, module) {
         this._hideTabs();
         this._addFieldTab.show();
     };
+
+    ControlPanel.prototype.disableSave = function () {
+        this._formSettingsTab.disableSave();
+    };
+
+    ControlPanel.prototype.enableSave = function () {
+        this._formSettingsTab.enableSave();
+    };
 });

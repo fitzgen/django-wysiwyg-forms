@@ -63,3 +63,30 @@ li.DWF-field * {
 #DWF-none-selected-msg {
     display: none;
 }
+
+/* Messages */
+
+#DWF-messages {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.DWF-message-success {
+    padding: .5em;
+    background-color: #CCFFCC;
+}
+
+.DWF-message-info {
+    padding: .5em;
+    background-color: #FFFFCC;
+}
+
+.DWF-message-warn {
+    padding: .5em;
+    background-color: #FFCCCC
+}
