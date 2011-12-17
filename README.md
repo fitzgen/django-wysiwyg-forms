@@ -27,8 +27,6 @@ Include the urls:
 
 ## TODO
 
-* Add deleting fields to the UI
-
 * Add choices to the UI
 
 * Rearranging positions and order in UI
