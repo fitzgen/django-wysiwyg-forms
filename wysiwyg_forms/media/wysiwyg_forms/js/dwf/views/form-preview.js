@@ -60,7 +60,7 @@ define(function (require, exports, module) {
         var f = new FieldPreview();
         this._fields.push(f);
 
-        f.activate(this._elements.fields[0], {
+        f.activate(this._elements.fields[0], $.extend({}, this.lib, {
             activateField: util.bind(function (label) {
                 this.activeField = f;
                 for ( var i = 0, len = this._fields.length; i < len; i++ ) {
@@ -70,7 +70,7 @@ define(function (require, exports, module) {
                 }
                 this.lib.activateField(label);
             }, this)
-        });
+        }));
 
         f.displayRequired(field.required());
         f.displayLabel(field.label());

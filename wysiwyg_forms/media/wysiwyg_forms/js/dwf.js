@@ -94,6 +94,15 @@ define(function (require, exports, module) {
         activateField: function (label) {
             form.activeField = form.getFieldByLabel(label);
             controlPanel.openFieldSettingsTab();
+        },
+
+        deleteField: function (label) {
+            form.deleteField(label);
+        },
+
+        deleteActiveField: function (label) {
+            controlPanel.openFormSettingsTab();
+            form.deleteField(label);
         }
     });
 

@@ -19,6 +19,17 @@ define(function (require, exports, module) {
             lib.activateField(this._elements.label.text());
             this.activateField();
         }, this));
+
+        $(this.element).find('.DWF-delete-field').click(util.bind(function (e) {
+            if ( this.isActiveField() ) {
+                lib.deleteActiveField(this._elements.label.text());
+            } else {
+                lib.deleteField(this._elements.label.text());
+            }
+            this.deactivate();
+            e.stopPropagation();
+            e.preventDefault();
+        }, this));
     };
 
     FieldPreview.prototype.deactivate = function () {
@@ -63,6 +74,10 @@ define(function (require, exports, module) {
 
     FieldPreview.prototype.activateField = function () {
         $(this.element).addClass('DWF-active-field');
+    };
+
+    FieldPreview.prototype.isActiveField = function () {
+        return $(this.element).hasClass('DWF-active-field');
     };
 
     FieldPreview.prototype.deactivateField = function () {

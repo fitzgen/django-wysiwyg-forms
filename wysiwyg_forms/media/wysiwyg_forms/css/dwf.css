@@ -75,6 +75,17 @@ li.DWF-field * {
     color: #FF0000;
 }
 
+.DWF-delete-field {
+    text-weight: bold;
+    font-family: sans-serif;
+    float: right;
+    display: none;
+}
+
+li.DWF-active-field .DWF-delete-field {
+    display: block;
+}
+
 /* Messages */
 
 #DWF-messages {

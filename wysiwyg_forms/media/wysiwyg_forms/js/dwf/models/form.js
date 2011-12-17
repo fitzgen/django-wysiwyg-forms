@@ -67,6 +67,29 @@ define(function (require, exports, module) {
         return f;
     };
 
+    Form.prototype.deleteField = function (label) {
+        var field, idx;
+        this.eachField(function (f, i) {
+            if ( f.label() === label ) {
+                field = f;
+                idx = i;
+                return false;
+            }
+        });
+        if ( field ) {
+            this._fields.splice(idx, 1);
+            transactions.addTransaction({
+                action: 'remove field',
+                label: field.label()
+            });
+            if ( field === this.activeField ) {
+                delete this.activeField;
+            }
+        } else {
+            throw Error('Can\'t delete a a field that doesn\'t exist');
+        }
+    };
+
     Form.prototype.getFieldByLabel = function (label) {
         for ( var i = 0, len = this._fields.length; i < len; i++ ) {
             if ( label === this._fields[i].label() ) {
