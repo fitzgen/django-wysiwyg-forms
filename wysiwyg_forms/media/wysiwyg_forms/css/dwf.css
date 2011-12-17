@@ -3,9 +3,13 @@
     margin: 0 auto;
 }
 
+/* Control Panel */
+
 #DWF-control-panel {
     width: 40%;
     float: left;
+    border: 1px solid #000000;
+    margin: -2px;
 }
 
 #DWF-control-panel input,
@@ -24,10 +28,6 @@
 }
 
 #DWF-control-panel ul#DWF-control-panel-tabs li {
-    width: 30%;
-    float: left;
-    list-style-type: none;
-    text-align: center;
 }
 
 #DWF-control-panel #DWF-add-field li button {
@@ -42,14 +42,39 @@
     margin: 2em;
 }
 
+#DWF-control-panel-tabs {
+    padding: 0;
+    margin: 0;
+}
+
+#DWF-control-panel-tabs > li {
+    background-color: #CCCCCC;
+    margin: 0;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    width: 128px;
+    float: left;
+    list-style-type: none;
+    text-align: center;
+}
+
+li.DWF-active-tab {
+    text-weight: bold;
+    background-color: #FFFFFF !important;
+}
+
+/* Form Preview */
+
 #DWF-form {
-    width: 60%;
+    width: 57.5%;
     float: right;
+    padding-left: 2.5%;
 }
 
 #DWF-form-fields {
     margin: 0;
     padding: 0;
+    list-style-type: none;
 }
 
 li.DWF-field {

@@ -33,8 +33,11 @@ define(function (require, exports, module) {
 
     ControlPanel.prototype._hideTabs = function () {
         this._addFieldTab.hide();
+        $(this.element).find('.add-field').removeClass('DWF-active-tab');
         this._fieldSettingsTab.hide();
+        $(this.element).find('.field-settings').removeClass('DWF-active-tab');
         this._formSettingsTab.hide();
+        $(this.element).find('.form-settings').removeClass('DWF-active-tab');
     };
 
     ControlPanel.prototype.deactivate = function () {
@@ -48,16 +51,19 @@ define(function (require, exports, module) {
     ControlPanel.prototype.openFieldSettingsTab = function () {
         this._hideTabs();
         this._fieldSettingsTab.show();
+        $(this.element).find('.field-settings').addClass('DWF-active-tab');
     };
 
     ControlPanel.prototype.openFormSettingsTab = function () {
         this._hideTabs();
         this._formSettingsTab.show();
+        $(this.element).find('.form-settings').addClass('DWF-active-tab');
     };
 
     ControlPanel.prototype.openAddFieldTab = function () {
         this._hideTabs();
         this._addFieldTab.show();
+        $(this.element).find('.add-field').addClass('DWF-active-tab');
     };
 
     ControlPanel.prototype.disableSave = function () {
