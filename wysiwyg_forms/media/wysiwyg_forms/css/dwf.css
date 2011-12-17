@@ -14,6 +14,11 @@
     margin-bottom: 1em;
 }
 
+#DWF-form-settings input,
+#DWF-form-settings textarea {
+    width: 100%;
+}
+
 #DWF-control-panel label {
     display: block;
 }
