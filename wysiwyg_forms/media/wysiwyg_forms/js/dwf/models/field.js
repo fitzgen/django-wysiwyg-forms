@@ -35,8 +35,21 @@ define(function (require, exports, module) {
         });
     });
 
+    Field.prototype.type = util.getSetter('_type', function (val) {
+        transactions.addTransaction({
+            action : "change field type",
+            label  : this.label(),
+            to     : val
+        });
+        // TODO: if the new type doesn't have choices, delete them.
+    });
+
     Field.prototype.widget = util.getSetter('_widget', function (val) {
-        // TODO: transaction here
+        transactions.addTransaction({
+            action : "change field widget",
+            label  : this.label(),
+            to     : val
+        });
     });
 
     Field.prototype.choices = util.getSetter('_choices', function (val) {

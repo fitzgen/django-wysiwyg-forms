@@ -54,6 +54,14 @@ define(function (require, exports, module) {
             return form.activeField.required();
         },
 
+        getActiveFieldType: function () {
+            return form.activeField.type();
+        },
+
+        getActiveFieldWidget: function () {
+            return form.activeField.widget();
+        },
+
         updateActiveFieldLabel: function (val) {
             form.activeField.label(val);
             formPreview.displayActiveFieldLabel(val);
@@ -67,6 +75,15 @@ define(function (require, exports, module) {
         updateActiveFieldRequired: function (val) {
             form.activeField.required(val);
             formPreview.displayActiveFieldRequired(val);
+        },
+
+        updateActiveFieldType: function (val) {
+            form.activeField.type(val);
+        },
+
+        updateActiveFieldWidget: function (val) {
+            form.activeField.widget(val);
+            formPreview.displayActiveFieldWidget(val, form.activeField.choices());
         },
 
         getFormName: function () {

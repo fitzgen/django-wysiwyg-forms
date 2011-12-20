@@ -27,11 +27,11 @@ Include the urls:
 
 ## TODO
 
-* Add choices to the UI
+* Add an element caching system to the base view
 
 * Rearranging positions and order in UI
 
-* Changing the type and widget of a field in the UI
+* Add choices to the UI
 
 * Start using Django 1.3's class based views
 

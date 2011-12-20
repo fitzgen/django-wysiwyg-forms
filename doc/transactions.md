@@ -91,6 +91,12 @@ anything about that.
     label: the field's label
     to: The new field type
 
+### Change Field Widget
+
+    action: "change field widget
+    label: the field's label
+    to: The new widget
+
 ### Change Field Required
 
     action: "change field required"

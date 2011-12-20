@@ -56,6 +56,15 @@ define(function (require, exports, module) {
         }
     };
 
+    FormPreview.prototype.displayActiveFieldWidget = function (val, choices) {
+        if ( this.activeField ) {
+            this.activeField.displayWidget(val, choices);
+        }
+        else {
+            throw new TypeError('No active field');
+        }
+    };
+
     FormPreview.prototype.addField = function (field) {
         var f = new FieldPreview();
         this._fields.push(f);

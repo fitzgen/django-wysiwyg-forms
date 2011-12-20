@@ -111,11 +111,11 @@ define(function (require, exports, module) {
         attrs.name = name;
 
         var i,
-            ouput = ["<ul>"];
+            output = ["<ul>"];
 
         for (i = 0; i < choices.length; i++) {
             output.push("<li>" +
-                        (new CheckboxInput()).render(name, attrs) +
+                        (new exports.CheckboxInput()).render(name, attrs) +
                         choiceLabel(choices[i]) +
                         "</li>");
         }
