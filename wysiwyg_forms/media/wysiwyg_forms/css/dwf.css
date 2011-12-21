@@ -117,6 +117,12 @@ li.DWF-field textarea {
     background-color: #FFC;
 }
 
+.DWF-field-placeholder {
+    border: 1px dashed #AAAAAA;
+    background-color: #FAFAFA;
+    padding: 1em;
+}
+
 .DWF-active-field,
 .DWF-active-field:hover {
     background-color: #FFA;

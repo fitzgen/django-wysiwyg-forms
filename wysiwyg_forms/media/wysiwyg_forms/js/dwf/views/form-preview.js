@@ -18,7 +18,10 @@ define(function (require, exports, module) {
     FormPreview.prototype.activate = function (rootElement, lib) {
         View.prototype.activate.call(this, rootElement, lib);
 
-        this._elements.fields.sortable();
+        this._elements.fields.sortable({
+            placeholder: 'DWF-field-placeholder',
+            forcePlaceholderSize: true
+        });
 
         this.activeField = null;
         // Not in any particular order so don't rely on this order.
