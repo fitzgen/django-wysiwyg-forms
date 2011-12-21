@@ -120,6 +120,10 @@ define(function (require, exports, module) {
         deleteActiveField: function (label) {
             controlPanel.openFormSettingsTab();
             form.deleteField(label);
+        },
+
+        updateFieldPosition: function (label, pos) {
+            form.getFieldByLabel(label).position(pos);
         }
     });
 

@@ -27,8 +27,6 @@ Include the urls:
 
 ## TODO
 
-* Rearranging positions and order in UI
-
 * Add choices to the UI
 
 * Start using Django 1.3's class based views

@@ -16,6 +16,12 @@ define(function (require, exports, module) {
         this.activeField = null;
     };
 
+    Form.prototype._sortFields = function () {
+        this._fields.sort(function (fieldA, fieldB) {
+            return fieldA.position() - fieldB.position();
+        });
+    };
+
     Form.prototype.id = function () {
         return this._id;
     };
@@ -45,7 +51,8 @@ define(function (require, exports, module) {
             widget: widget,
             help_text: '',
             required: true,
-            choices: []
+            choices: [],
+            position: this._fields.length
         });
         this._fields.push(f);
 
@@ -69,6 +76,7 @@ define(function (require, exports, module) {
 
     Form.prototype.deleteField = function (label) {
         var field, idx;
+
         this.eachField(function (f, i) {
             if ( f.label() === label ) {
                 field = f;
@@ -76,6 +84,7 @@ define(function (require, exports, module) {
                 return false;
             }
         });
+
         if ( field ) {
             this._fields.splice(idx, 1);
             transactions.addTransaction({
@@ -85,8 +94,16 @@ define(function (require, exports, module) {
             if ( field === this.activeField ) {
                 delete this.activeField;
             }
-        } else {
-            throw Error('Can\'t delete a a field that doesn\'t exist');
+
+            // Update the positions of all the fields so there are no gaps.
+            this._sortFields();
+            for ( var i = 0, len = this._fields.length; i < len; i++ ) {
+                this._fields[i].position(i);
+            }
+        }
+
+        else {
+            throw Error('Can\'t delete a field that doesn\'t exist');
         }
     };
 
@@ -99,12 +116,15 @@ define(function (require, exports, module) {
         return null;
     };
 
-    // Should guarantee order of the fields.
+    // Guarantees the order of the fields is correct.
     Form.prototype.eachField = function (cb, ctx) {
         var i = 0;
         var len = this._fields.length;
         var ret = true;
         ctx = ctx || {};
+
+        this._sortFields();
+
         for ( ; i < len && ret !== false; i ++ ) {
             ret = cb.call(ctx, this._fields[i], i);
         }

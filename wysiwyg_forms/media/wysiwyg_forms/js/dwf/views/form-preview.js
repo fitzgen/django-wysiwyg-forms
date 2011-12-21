@@ -3,6 +3,7 @@ define(function (require, exports, module) {
     var FieldPreview = require('dwf/views/field-preview').FieldPreview;
     var widgets = require('dwf/widgets');
     var util = require('dwf/util');
+    require('jquery-ui');
 
     var FormPreview = exports.FormPreview = function () {};
     FormPreview.prototype = new View();
@@ -17,8 +18,19 @@ define(function (require, exports, module) {
     FormPreview.prototype.activate = function (rootElement, lib) {
         View.prototype.activate.call(this, rootElement, lib);
 
+        this._elements.fields.sortable();
+
         this.activeField = null;
+        // Not in any particular order so don't rely on this order.
         this._fields = [];
+    };
+
+    FormPreview.prototype.addListeners = function (lib) {
+        this._elements.fields.bind('sortupdate', util.bind(function () {
+            this._elements.fields.find('li').each(function (i, el) {
+                lib.updateFieldPosition($(el).find('.DWF-field-label').text(), i);
+            })
+        }, this));
     };
 
     FormPreview.prototype.displayFormName = function (val) {

@@ -9,6 +9,7 @@ define(function (require, exports, module) {
         this._helpText = initialData.help_text;
         this._required = initialData.required;
         this._choices = initialData.choices;
+        this._position = initialData.position;
     };
 
     Field.prototype.label = util.getSetter('_label', function (newVal, oldVal) {
@@ -49,6 +50,14 @@ define(function (require, exports, module) {
             action : "change field widget",
             label  : this.label(),
             to     : val
+        });
+    });
+
+    Field.prototype.position = util.getSetter('_position', function (val) {
+        transactions.addTransaction({
+            action : "move field",
+            label  : this.label(),
+            to     : Math.floor(Number(val))
         });
     });
 

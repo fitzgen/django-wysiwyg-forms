@@ -48,6 +48,7 @@ class Form(models.Model):
                                                "widget"    : f.widget,
                                                "help_text" : f.help_text,
                                                "required"  : f.required,
+                                               "position"  : f.position,
                                                "choices"   : [(c.slug, c.label) for c in f.choices] }
                                              for f in self.fields] })
 
