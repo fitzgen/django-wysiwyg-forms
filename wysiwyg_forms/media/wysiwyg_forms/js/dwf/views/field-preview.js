@@ -7,14 +7,14 @@ define(function (require, exports, module) {
     FieldPreview.prototype = new View();
     FieldPreview.prototype._template = require('text!dwf/views/field-preview.html');
 
-    FieldPreview.prototype.addListeners = function (lib) {
-        this._elements = {
-            required: $(this.element).find('.DWF-field-required'),
-            label: $(this.element).find('.DWF-field-label'),
-            helpText: $(this.element).find('.DWF-help-text'),
-            widget: $(this.element).find('.DWF-field-widget')
-        };
+    FieldPreview.prototype._elements = {
+        required: '.DWF-field-required',
+        label: '.DWF-field-label',
+        helpText: '.DWF-help-text',
+        widget: '.DWF-field-widget'
+    };
 
+    FieldPreview.prototype.addListeners = function (lib) {
         $(this.element).click(util.bind(function () {
             lib.activateField(this._elements.label.text());
             this.activateField();
@@ -30,15 +30,6 @@ define(function (require, exports, module) {
             e.stopPropagation();
             e.preventDefault();
         }, this));
-    };
-
-    FieldPreview.prototype.deactivate = function () {
-        delete this._elements.required;
-        delete this._elements.label;
-        delete this._elements.helpText;
-        delete this._elements.widget;
-        delete this._elements;
-        View.prototype.deactivate.call(this);
     };
 
     FieldPreview.prototype.displayRequired = function (val) {

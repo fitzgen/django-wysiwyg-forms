@@ -19,17 +19,17 @@ define(function (require, exports, module) {
         }
     };
 
-    FieldSettingsTab.prototype.addListeners = function (lib) {
-        this._elements = {
-            editFieldLabel: $(this.element).find('#DWF-edit-field-label'),
-            editFieldHelpText: $(this.element).find('#DWF-edit-field-help-text'),
-            editFieldRequired: $(this.element).find('#DWF-edit-field-required'),
-            editField: $(this.element).find('#DWF-edit-field'),
-            noFieldsMsg: $(this.element).find('#DWF-no-fields-msg'),
-            noneSelectedMsg: $(this.element).find('#DWF-none-selected-msg'),
-            editFieldType: $(this.element).find('#DWF-edit-field-type')
-        };
+    FieldSettingsTab.prototype._elements = {
+        editFieldLabel: '#DWF-edit-field-label',
+        editFieldHelpText: '#DWF-edit-field-help-text',
+        editFieldRequired: '#DWF-edit-field-required',
+        editField: '#DWF-edit-field',
+        noFieldsMsg: '#DWF-no-fields-msg',
+        noneSelectedMsg: '#DWF-none-selected-msg',
+        editFieldType: '#DWF-edit-field-type'
+    };
 
+    FieldSettingsTab.prototype.addListeners = function (lib) {
         // Listen for users updating the label
         function updateFieldLabel (event) {
             lib.updateActiveFieldLabel(this.value);

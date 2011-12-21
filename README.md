@@ -27,8 +27,6 @@ Include the urls:
 
 ## TODO
 
-* Add an element caching system to the base view
-
 * Rearranging positions and order in UI
 
 * Add choices to the UI

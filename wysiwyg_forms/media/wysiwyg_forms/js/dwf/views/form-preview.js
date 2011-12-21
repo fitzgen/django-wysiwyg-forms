@@ -8,17 +8,17 @@ define(function (require, exports, module) {
     FormPreview.prototype = new View();
     FormPreview.prototype._template = require('text!dwf/views/form-preview.html');
 
+    FormPreview.prototype._elements = {
+        name: '#DWF-form-name',
+        description: '#DWF-form-description',
+        fields: '#DWF-form-fields'
+    };
+
     FormPreview.prototype.activate = function (rootElement, lib) {
         View.prototype.activate.call(this, rootElement, lib);
 
         this.activeField = null;
         this._fields = [];
-
-        this._elements = {
-            name: $(this.element).find('#DWF-form-name'),
-            description: $(this.element).find('#DWF-form-description'),
-            fields: $(this.element).find('#DWF-form-fields')
-        };
     };
 
     FormPreview.prototype.displayFormName = function (val) {
