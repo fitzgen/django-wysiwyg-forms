@@ -1,6 +1,6 @@
 #DWF-base {
     width: 960px;
-    margin: 0 auto;
+    margin: 2em auto;
 }
 
 /* Control Panel */
@@ -8,12 +8,14 @@
 #DWF-control-panel {
     width: 40%;
     float: left;
-    border: 1px solid #000000;
+    border: 1px solid #AAAACC;
     margin: -2px;
+    background-color: #EEEEFF;
 }
 
 #DWF-control-panel input,
-#DWF-control-panel textarea {
+#DWF-control-panel textarea,
+#DWF-control-panel select {
     display: block;
     margin-bottom: 1em;
 }
@@ -42,13 +44,28 @@
     margin: 2em;
 }
 
+#DWF-add-field textarea {
+    width: 100%;
+}
+
+#DWF-add-field > ul {
+    margin: 0;
+    padding: 0;
+    padding-top: 1em;
+    list-style-type: none;
+}
+
+#DWF-add-field > ul > li {
+    border-bottom: 1px dotted #AAAAAA;
+}
+
 #DWF-control-panel-tabs {
     padding: 0;
     margin: 0;
 }
 
 #DWF-control-panel-tabs > li {
-    background-color: #CCCCCC;
+    background-color: #CCCCFF;
     margin: 0;
     padding-top: .5em;
     padding-bottom: .5em;
@@ -60,7 +77,11 @@
 
 li.DWF-active-tab {
     text-weight: bold;
-    background-color: #FFFFFF !important;
+    background-color: #EEEEFF !important;
+}
+
+li > input[type=checkbox] {
+    display: inline !important;
 }
 
 /* Form Preview */
@@ -84,6 +105,10 @@ li.DWF-field {
 
 li.DWF-field * {
     cursor: pointer;
+}
+
+li.DWF-field textarea {
+    width: 100%;
 }
 
 .DWF-field:hover {
