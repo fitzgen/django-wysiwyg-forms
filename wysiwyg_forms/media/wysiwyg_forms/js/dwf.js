@@ -149,7 +149,9 @@ define(function (require, exports, module) {
                 var d = new Date();
                 messages.success('Successfully saved at '
                                  + ((d.getHours() % 12) || 12)
-                                 + ':' + d.getMinutes());
+                                 + ':' + (d.getMinutes() < 10
+                                          ? '0' + d.getMinutes()
+                                          : d.getMinutes()));
             },
             error: function () {
                 controlPanel.enableSave();
