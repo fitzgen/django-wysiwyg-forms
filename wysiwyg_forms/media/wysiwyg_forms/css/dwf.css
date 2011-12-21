@@ -20,8 +20,10 @@
     margin-bottom: 1em;
 }
 
-#DWF-form-settings input,
-#DWF-form-settings textarea {
+#DWF-form-settings input[type=text],
+#DWF-form-settings textarea,
+#DWF-field-settings input[type=text],
+#DWF-field-settings textarea {
     width: 100%;
 }
 
