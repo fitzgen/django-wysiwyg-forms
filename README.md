@@ -27,8 +27,6 @@ Include the urls:
 
 ## TODO
 
-* Fix bug with existing choices and changing types
-
 * Write UI tests
 
 * Start using Django 1.3's class based views

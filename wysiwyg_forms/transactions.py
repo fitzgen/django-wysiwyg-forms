@@ -1,5 +1,6 @@
 from .exceptions import WysiwygFormsException
 from .utils import field_type_has_choices, is_valid_field_type
+from .models import Choice
 
 __all__ = ("Transaction",)
 
@@ -91,8 +92,7 @@ def apply_to(t, form):
         field = form.get_field(t.label)
         field.type = t.to
         if not field_type_has_choices(t.to):
-            for c in field.choices:
-                c.delete()
+            Choice.objects.filter(field=field).delete()
 
 @Transaction.register("change field widget")
 def apply_to(t, form):
