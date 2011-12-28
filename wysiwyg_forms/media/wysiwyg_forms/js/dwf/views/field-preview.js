@@ -20,7 +20,7 @@ define(function (require, exports, module) {
             this.activateField();
         }, this));
 
-        $(this.element).find('.DWF-delete-field').click(util.bind(function (e) {
+        $(this.element).find('.DWF-delete').click(util.bind(function (e) {
             if ( this.isActiveField() ) {
                 lib.deleteActiveField(this._elements.label.text());
             } else {
@@ -51,7 +51,7 @@ define(function (require, exports, module) {
     FieldPreview.prototype.displayWidget = function (widget, choices) {
         this._elements.widget.contents().remove();
 
-        var attrs = { disabled: true };
+        var attrs = {};
         var renderedWidget = widgets[widget] ?
             (new widgets[widget]()).render(null, attrs, choices) :
             (new widgets.TextInput()).render(null, attrs);

@@ -15,7 +15,8 @@ define(function (require, exports, module) {
 
         { fieldType: "ChoiceField",
           widget: "Select",
-          description: "Select single option" },
+          description: "Select single option",
+          hasChoices: true },
 
         { fieldType: "DateField",
           widget: "DateInput",
@@ -51,7 +52,8 @@ define(function (require, exports, module) {
 
         { fieldType: "MultipleChoiceField",
           widget: "CheckboxSelectMultiple",
-          description: "Select multiple options" },
+          description: "Select multiple options",
+          hasChoices: true },
 
         { fieldType: "TimeField",
           widget: "TextInput",
@@ -61,5 +63,29 @@ define(function (require, exports, module) {
           widget: "TextInput",
           description: "URL hyperlink" }
     ];
+
+    // Iterate over each of the field types, return false to break out of the
+    // iteration.
+    exports.eachFieldType = function (fn, ctx) {
+        var ret = true;
+        var i = 0;
+        var len = exports.FIELD_TYPES.length
+        ctx = ctx || {};
+        for ( ; i < len && ret !== false; i++ ) {
+            ret = fn.call(ctx, exports.FIELD_TYPES[i]);
+        }
+    };
+
+    // Returns true if the given field type has choices.
+    exports.hasChoices = function (type) {
+        var ret = false;
+        exports.eachFieldType(function (t) {
+            if ( t.fieldType === type && t.hasChoices ) {
+                ret = true;
+                return false;
+            }
+        });
+        return ret;
+    };
 
 });

@@ -21,12 +21,13 @@ define(function (require, exports, module) {
 
     controlPanel.activate(base, {
         addField: function (fieldType, widget) {
-            util.prompt("Label:", function (label) {
-                if (label) {
-                    if (form.getFieldByLabel(label)) {
+            util.prompt("Field Label:", function (label) {
+                if ( label ) {
+                    if ( form.getFieldByLabel(label) ) {
                         util.prompt("A field with that label already exists. Enter a new one:",
                                     arguments.callee);
-                    } else {
+                    }
+                    else {
                         var f = form.addField(label, fieldType, widget);
                         formPreview.addField(f);
                     }
@@ -62,6 +63,33 @@ define(function (require, exports, module) {
             return form.activeField.widget();
         },
 
+        getActiveFieldChoices: function (fn, ctx) {
+            return form.activeField.choices();
+        },
+
+        addChoice: function (fn, ctx) {
+            util.prompt('Choice Label:', function (label) {
+                if ( label ) {
+                    if ( form.activeField.getChoiceByLabel(label) ) {
+                        util.prompt('A choice with that label already exists. Enter a new label:',
+                                    arguments.callee);
+                    }
+                    else {
+                        form.activeField.addChoice(label);
+                        formPreview.displayActiveFieldWidget(form.activeField.widget(),
+                                                             form.activeField.choices());
+                        fn.call(ctx, label);
+                    }
+                }
+            });
+        },
+
+        deleteChoice: function (label) {
+            form.activeField.deleteChoice(label);
+            formPreview.displayActiveFieldWidget(form.activeField.widget(),
+                                                 form.activeField.choices());
+        },
+
         updateActiveFieldLabel: function (val) {
             form.activeField.label(val);
             formPreview.displayActiveFieldLabel(val);
@@ -84,6 +112,15 @@ define(function (require, exports, module) {
         updateActiveFieldWidget: function (val) {
             form.activeField.widget(val);
             formPreview.displayActiveFieldWidget(val, form.activeField.choices());
+        },
+
+        updateActiveFieldChoices: function (choices) {
+            form.activeField.eachChoice(function (c, i) {
+                c.label(choices.shift());
+                c.position(i);
+            });
+            formPreview.displayActiveFieldWidget(form.activeField.widget(),
+                                                 form.activeField.choices());
         },
 
         getFormName: function () {

@@ -49,7 +49,9 @@ class Form(models.Model):
                                                "help_text" : f.help_text,
                                                "required"  : f.required,
                                                "position"  : f.position,
-                                               "choices"   : [(c.slug, c.label) for c in f.choices] }
+                                               "choices"   : [{ "label"    : c.label,
+                                                                "position" : c.position }
+                                                              for c in f.choices] }
                                              for f in self.fields] })
 
     @property

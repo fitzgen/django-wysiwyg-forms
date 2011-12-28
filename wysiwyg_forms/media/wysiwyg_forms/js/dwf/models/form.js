@@ -7,8 +7,8 @@ define(function (require, exports, module) {
         this._id = initialData.id;
         this._name = initialData.name;
         this._description = initialData.description;
-        this._fields = [];
 
+        this._fields = [];
         for ( var i = 0, len = initialData.fields.length; i < len; i++ ) {
             this._fields.push(new Field(initialData.fields[i]));
         }
@@ -116,7 +116,12 @@ define(function (require, exports, module) {
         return null;
     };
 
-    // Guarantees the order of the fields is correct.
+    // Guarantees the order of the fields is correct. `cb` is the callback
+    // function that is called for each field and `ctx` is the optional `this`
+    // context for the callback.
+    //
+    // `cb` is passed two params: the field and the field's index. Return
+    // `false` to break out of the loop early.
     Form.prototype.eachField = function (cb, ctx) {
         var i = 0;
         var len = this._fields.length;
@@ -125,7 +130,7 @@ define(function (require, exports, module) {
 
         this._sortFields();
 
-        for ( ; i < len && ret !== false; i ++ ) {
+        for ( ; i < len && ret !== false; i++ ) {
             ret = cb.call(ctx, this._fields[i], i);
         }
     };

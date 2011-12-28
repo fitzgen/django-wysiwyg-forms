@@ -86,6 +86,16 @@ li > input[type=checkbox] {
     display: inline !important;
 }
 
+#DWF-edit-field-choices ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#DWF-edit-field-choices li input {
+    width: 90% !important;
+}
+
 /* Form Preview */
 
 #DWF-form {
@@ -138,14 +148,17 @@ li.DWF-field textarea {
     color: #FF0000;
 }
 
-.DWF-delete-field {
+.DWF-delete {
     text-weight: bold;
     font-family: sans-serif;
     float: right;
     display: none;
+    cursor: pointer;
+    color: #FF0000;
 }
 
-li.DWF-active-field .DWF-delete-field {
+li.DWF-active-field .DWF-delete,
+#DWF-edit-field-choices .DWF-delete {
     display: block;
 }
 

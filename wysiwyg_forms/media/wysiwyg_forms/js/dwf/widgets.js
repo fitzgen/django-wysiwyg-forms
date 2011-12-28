@@ -17,7 +17,9 @@ define(function (require, exports, module) {
     var Input = function () {};
     Input.prototype.inputType = null; // subclasses will override this.
     Input.prototype.render = function (name, attrs) {
-        attrs.name = name;
+        if ( name ) {
+            attrs.name = name;
+        }
         return ["<input",
                 flattenAttrs(attrs),
                 "type=\"" + this.inputType + "\" />"].join(" ");
@@ -57,13 +59,17 @@ define(function (require, exports, module) {
 
     exports.Textarea = function () {};
     exports.Textarea.prototype.render = function (name, attrs) {
-        attrs.name = name;
+        if ( name ) {
+            attrs.name = name;
+        }
         return ["<textarea", flattenAttrs(attrs), "></textarea>"].join(" ");
     };
 
     exports.Select = function () {};
     exports.Select.prototype.render = function (name, attrs, choices) {
-        attrs.name = name;
+        if ( name ) {
+            attrs.name = name;
+        }
 
         var i,
             output = [["<select ", flattenAttrs(attrs), ">"].join("")];
@@ -83,14 +89,18 @@ define(function (require, exports, module) {
     exports.SelectMultiple = function () {};
     exports.SelectMultiple.prototype = new exports.Select();
     exports.SelectMultiple.prototype.render = function (name, attrs, choices) {
-        attrs.name = name;
+        if ( name ) {
+            attrs.name = name;
+        }
         attrs.multiple = "multiple";
         return exports.Select.prototype.render(name, attrs, choices);
     };
 
     exports.RadioSelect = function () {};
     exports.RadioSelect.prototype.render = function (name, attrs, choices) {
-        attrs.name = name;
+        if ( name ) {
+            attrs.name = name;
+        }
 
         var i,
             output = ["<ul>"];
@@ -108,7 +118,9 @@ define(function (require, exports, module) {
 
     exports.CheckboxSelectMultiple = function () {};
     exports.CheckboxSelectMultiple.prototype.render = function (name, attrs, choices) {
-        attrs.name = name;
+        if ( name ) {
+            attrs.name = name;
+        }
 
         var i,
             output = ["<ul>"];

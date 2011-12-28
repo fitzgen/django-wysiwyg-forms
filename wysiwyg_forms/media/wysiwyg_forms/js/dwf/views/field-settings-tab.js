@@ -1,6 +1,7 @@
 define(function (require, exports, module) {
     var View = require('dwf/views/base-view').View;
-    var FIELD_TYPES = require('dwf/field-types').FIELD_TYPES;
+    var fieldTypes = require('dwf/field-types');
+    var util = require('dwf/util');
 
     var FieldSettingsTab = exports.FieldSettingsTab = function () {};
     FieldSettingsTab.prototype = new View();
@@ -11,12 +12,12 @@ define(function (require, exports, module) {
 
         // Add all the different types of fields to the dropdown box which lets
         // you select the field's type.
-        for ( var i = 0, len = FIELD_TYPES.length; i < len; i++ ) {
+        fieldTypes.eachFieldType(function (fieldType) {
             this._elements.editFieldType.append('<option value="'
-                                                + FIELD_TYPES[i].fieldType + '--'
-                                                + FIELD_TYPES[i].widget + '">'
-                                                + FIELD_TYPES[i].description + '</option>');
-        }
+                                                + fieldType.fieldType + '--'
+                                                + fieldType.widget + '">'
+                                                + fieldType.description + '</option>');
+        }, this);
     };
 
     FieldSettingsTab.prototype._elements = {
@@ -26,7 +27,8 @@ define(function (require, exports, module) {
         editField: '#DWF-edit-field',
         noFieldsMsg: '#DWF-no-fields-msg',
         noneSelectedMsg: '#DWF-none-selected-msg',
-        editFieldType: '#DWF-edit-field-type'
+        editFieldType: '#DWF-edit-field-type',
+        editFieldChoices: '#DWF-edit-field-choices'
     };
 
     FieldSettingsTab.prototype.addListeners = function (lib) {
@@ -52,16 +54,69 @@ define(function (require, exports, module) {
         });
 
         // Listen for users changing the type of a field.
-        this._elements.editFieldType.change(function () {
-            var val = $(this).find('option:selected').val().split('--');
+        this._elements.editFieldType.change(util.bind(function () {
+            var val = this._elements.editFieldType
+                .find('option:selected')
+                .val()
+                .split('--');
             var type = val[0];
             var widget = val[1];
             lib.updateActiveFieldType(type);
             lib.updateActiveFieldWidget(widget);
+            this._maybeShowChoices(type);
+        }, this));
+
+        // Listen for people deleting choices.
+        this._elements.editFieldChoices.on('click', '.DWF-delete', function (event) {
+            lib.deleteChoice($(event.target).parent().find('input').val());
+            $(event.target).parent().remove();
         });
+
+        // Listen to the click of the add choice button.
+        this._elements.editFieldChoices.on('click', 'button', util.bind(function () {
+            lib.addChoice(function (label) {
+                this._addChoice(label);
+            }, this);
+        }, this));
+
+        // Listen for the updating of choices.
+        this._elements.editFieldChoices.on('keyup change', 'input', util.bind(function (event) {
+            var choices = [];
+            this._elements.editFieldChoices.find('input').each(function () {
+                choices.push(this.value);
+            });
+            lib.updateActiveFieldChoices(choices);
+        }, this));
 
         // Make the link to add a field if none exist work.
         this._elements.noFieldsMsg.find('a').click(lib.openAddFieldTab);
+    };
+
+    FieldSettingsTab.prototype._maybeShowChoices = function (type) {
+        // If this field type supports choices, initialize the stuff for
+        // editing choices, otherwise hide it.
+        if ( fieldTypes.hasChoices(type) ) {
+            this._initializeChoices();
+            this._elements.editFieldChoices.show();
+        }
+        else {
+            this._elements.editFieldChoices.hide();
+        }
+    };
+
+    FieldSettingsTab.prototype._addChoice = function (label) {
+        this._elements.editFieldChoices.find('ul')
+            .append('<li><span class="DWF-delete" title="Delete this choice">X</span>'
+                    + '<input type="text" value="' + label + '" /></li>');
+    };
+
+    FieldSettingsTab.prototype._initializeChoices = function () {
+        this._elements.editFieldChoices.find('ul').contents().remove();
+
+        var choices = this.lib.getActiveFieldChoices();
+        for ( var i = 0, len = choices.length; i < len; i++ ) {
+            this._addChoice(choices[i][1]);
+        }
     };
 
     FieldSettingsTab.prototype.show = function () {
@@ -97,6 +152,7 @@ define(function (require, exports, module) {
                 }
             });
 
+            this._maybeShowChoices(type);
             $(this.element).find('#DWF-edit-field').show();
         }
 
