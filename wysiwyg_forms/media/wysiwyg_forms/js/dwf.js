@@ -197,7 +197,7 @@ define(function (require, exports, module) {
             error: function () {
                 controlPanel.enableSave();
                 messages.removeMessage(msgId);
-                messages.error('There was an error saving.');
+                messages.warn('There was an error saving.');
             }
         };
     }()));
