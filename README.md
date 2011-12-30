@@ -1,6 +1,13 @@
 # Django WYSIWYG Forms
 
-## Install:
+## What is this?
+
+Django WYSIWYG Forms is a Django app that allows normal users to create forms
+using a What You See Is What You Get style interface (similar to Wufoo or Google
+Docs) and then gives programmers access to those user created forms as
+`django.forms.Form` classes and instances. After that, the world is your oyster!
+
+## Installing
 
     git clone git://github.com/fitzgen/django-wysiwyg-forms.git
     cd django-wysiwyg-forms/
@@ -27,5 +34,7 @@ Include the urls:
 * Start using Django 1.3's class based views
 
 * Start using django.contrib.staticfiles in Django 1.3
+
+* Publish to PyPI
 
 * Export answers to forms as CSV
