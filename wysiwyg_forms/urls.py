@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
 
-from django.views.generic.simple import direct_to_template
+from django.views.generic import TemplateView
 
 from .views import ApplyTransactions, Edit
 
@@ -16,7 +16,6 @@ if settings.DEBUG:
     urlpatterns += patterns(
         '',
         url(r"^test/$",
-            direct_to_template,
-            { "template": "wysiwyg_forms/test.html" },
+            TemplateView.as_view(template_name="wysiwyg_forms/test.html"),
             name="wysiwyg_forms_test")
     )
