@@ -1,8 +1,5 @@
 # Django WYSIWYG Forms
 
-*Note: this project is not production ready at this time. Stay tuned for
- updates.*
-
 ## Install:
 
     git clone git://github.com/fitzgen/django-wysiwyg-forms.git
