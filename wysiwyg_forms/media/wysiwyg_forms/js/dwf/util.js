@@ -1,6 +1,5 @@
 define(function (require, exports, module) {
     exports.prompt = function (msg, callback) {
-        // TODO: make a modal window in HTML.
         var res = prompt(msg);
         res = res ? res : false;
         setTimeout(function () {

@@ -27,10 +27,8 @@ Include the urls:
 
 ## TODO
 
-* Write UI tests
-
 * Start using Django 1.3's class based views
 
 * Start using django.contrib.staticfiles in Django 1.3
 
-* Make the prompt a modal html window in the UI
+* Export answers to forms as CSV

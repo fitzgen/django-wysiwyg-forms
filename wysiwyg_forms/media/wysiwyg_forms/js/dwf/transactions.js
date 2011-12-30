@@ -13,7 +13,8 @@ define(function (require, exports, module) {
     };
 
     function loop () {
-        var transactionsToSave = transactions.splice(0, transactions.length);
+        var transactionsToSave = transactions;
+        transactions = [];
         if ( transactionsToSave.length > 0 ) {
             preSaveHook && preSaveHook();
 
@@ -27,9 +28,14 @@ define(function (require, exports, module) {
                 timerId = setTimeout(loop, TIMER_LENGTH);
             });
 
-            promise.error(function () {
-                errorSaveHook && errorSaveHook();
-                transactions.splice(0, 0, transactionsToSave);
+            promise.error(function (xhr) {
+                try {
+                    errorSaveHook && errorSaveHook(JSON.parse(xhr.responseText).error);
+                }
+                catch (e) {
+                    errorSaveHook && errorSaveHook();
+                }
+                transactions = transactionsToSave.concat(transactions);
                 timerId = setTimeout(loop, TIMER_LENGTH);
             });
         }

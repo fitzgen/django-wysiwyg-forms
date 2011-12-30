@@ -93,7 +93,7 @@ anything about that.
 
 ### Change Field Widget
 
-    action: "change field widget
+    action: "change field widget"
     label: the field's label
     to: The new widget
 

@@ -194,10 +194,13 @@ define(function (require, exports, module) {
                                           ? '0' + d.getMinutes()
                                           : d.getMinutes()));
             },
-            error: function () {
+            error: function (e) {
                 controlPanel.enableSave();
                 messages.removeMessage(msgId);
                 messages.warn('There was an error saving.');
+                if ( e ) {
+                    console.error('Server error: ' + e);
+                }
             }
         };
     }()));

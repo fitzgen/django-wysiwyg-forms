@@ -5,7 +5,8 @@ from django.utils.datastructures import SortedDict
 from django.utils import simplejson as json
 
 from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
-                         FieldDoesNotExist, FieldAlreadyExists)
+                         FieldDoesNotExist, FieldAlreadyExists,
+                         WysiwygFormsException)
 from .utils import field_type_has_choices
 
 class Form(models.Model):

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils import simplejson as json
 
+from .exceptions import WysiwygFormsException
 from .models import Form
 from .transactions import Transaction
 
@@ -25,7 +26,8 @@ class WysiwygFormView(object):
         if self.has_permissions(request, *args, **kwargs):
             content = self.get_content(request, *args, **kwargs)
             mimetype = self.get_mimetype(request, *args, **kwargs)
-            return http.HttpResponse(content, mimetype=mimetype)
+            status = self.get_status()
+            return http.HttpResponse(content, mimetype=mimetype, status=status)
         else:
             return http.HttpResponseForbidden("Forbidden")
 
@@ -35,6 +37,9 @@ class WysiwygFormView(object):
 
     def get_template(self):
         return template.loader.get_template(self.template_name)
+
+    def get_status(self):
+        return 200
 
     def get_mimetype(self, request, *args, **kwargs):
         return self.mimetype
@@ -48,19 +53,34 @@ class WysiwygFormView(object):
 class ApplyTransactions(WysiwygFormView):
     mimetype = "application/json"
 
+    def __init__(self):
+        self.error = None
+
     def has_permissions(self, request, *args, **kwargs):
         return request.method == "POST"
 
     def get_content(self, request, *args, **kwargs):
-        form_id = request.POST.get("form_id")
-        if not form_id:
-            return json.dumps({ "error": "No form id." })
+        try:
+            form_id = request.POST.get("form_id")
+            if not form_id:
+                raise WysiwygFormsException("No form id.")
+            else:
+                form = Form.objects.get(id=form_id)
+                for t in json.loads(request.POST.get("transactions", "[]")):
+                    Transaction(**t).apply_to(form)
+                form.save()
+                return form.as_json()
+        except WysiwygFormsException, e:
+            self.error = e
+            return json.dumps({
+                "error": e.message
+            })
+
+    def get_status(self):
+        if self.error:
+            return 500
         else:
-            form = Form.objects.get(id=form_id)
-            for t in json.loads(request.POST.get("transactions", "[]")):
-                Transaction(**t).apply_to(form)
-            form.save()
-            return form.as_json()
+            return 200
 
 class Edit(WysiwygFormView):
     template_name = "wysiwyg_forms/edit.html"
