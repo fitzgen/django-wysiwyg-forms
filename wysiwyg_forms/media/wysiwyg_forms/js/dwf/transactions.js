@@ -1,4 +1,6 @@
 define(function (require, exports, module) {
+    require('jquery.django-csrf');
+
     var transactions = [];
     var timerId;
     var preSaveHook;
