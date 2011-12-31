@@ -31,10 +31,11 @@ Include the urls:
 
 ## TODO
 
-* Start using Django 1.3's class based views
-
 * Start using django.contrib.staticfiles in Django 1.3
 
 * Publish to PyPI
+
+* Check settings.DEBUG for whether to use a dynamic require() in UI or to load a
+  prebuilt/optimized version of the JS
 
 * Export answers to forms as CSV
