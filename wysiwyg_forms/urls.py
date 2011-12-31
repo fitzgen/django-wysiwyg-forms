@@ -7,9 +7,15 @@ from .views import ApplyTransactions, Edit
 
 urlpatterns = patterns(
     '',
-    url(r"^save/$", ApplyTransactions, name="wysiwyg_forms_apply_transactions"),
-    url(r"^$", Edit.as_view(), name="wysiwyg_forms_new_form"),
-    url(r"^(?P<pk>\d+)/$", Edit.as_view(), name="wysiwyg_forms_edit_form")
+    url(r"^save/(?P<pk>\d+)/$",
+        ApplyTransactions.as_view(),
+        name="wysiwyg_forms_apply_transactions"),
+    url(r"^$",
+        Edit.as_view(),
+        name="wysiwyg_forms_new_form"),
+    url(r"^(?P<pk>\d+)/$",
+        Edit.as_view(),
+        name="wysiwyg_forms_edit_form")
 )
 
 if settings.DEBUG:

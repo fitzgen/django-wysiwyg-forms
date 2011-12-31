@@ -12,70 +12,37 @@ from .transactions import Transaction
 
 __all__ = ("ApplyTransactions", "Edit")
 
-class WysiwygFormView(object):
-    def __new__(cls, request, *args, **kwargs):
-        # XXX: Uses a little magic to keep things thread safe: __new__ returns
-        # an instance of HttpResponse rather than an instance of this view.
-        self = object.__new__(cls)
-        self.__init__(*args, **kwargs)
-        return self.view(request, *args, **kwargs)
+class ApplyTransactions(DetailView):
+    queryset = Form.objects.all()
+    context_object_name = "form"
+    http_method_names = ["post"]
 
-    def view(self, request, *args, **kwargs):
-        """
-        Returns an HttpResponse object.
-        """
-        if self.has_permissions(request, *args, **kwargs):
-            content = self.get_content(request, *args, **kwargs)
-            mimetype = self.get_mimetype(request, *args, **kwargs)
-            status = self.get_status()
-            return http.HttpResponse(content, mimetype=mimetype, status=status)
-        else:
-            return http.HttpResponseForbidden("Forbidden")
-
-    def get_content(self, request, *args, **kwargs):
-        context = self.get_context(request, *args, **kwargs)
-        return self.get_template().render(context)
-
-    def get_template(self):
-        return template.loader.get_template(self.template_name)
-
-    def get_status(self):
-        return 200
-
-    def get_mimetype(self, request, *args, **kwargs):
-        return self.mimetype
-
-    def has_permissions(self, request, *args, **kwargs):
-        """
-        Subclass and overload this method for custom authorization.
-        """
-        return True
-
-class ApplyTransactions(WysiwygFormView):
-    mimetype = "application/json"
-
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(ApplyTransactions, self).__init__(*args, **kwargs)
         self.error = None
+        self.post = self.get
 
-    def has_permissions(self, request, *args, **kwargs):
-        return request.method == "POST"
+    def render_to_response(self, context):
+        return http.HttpResponse(json.dumps(context, cls=Form.JSONEncoder),
+                                 content_type="application/json",
+                                 status=self.get_status())
 
-    def get_content(self, request, *args, **kwargs):
+    def get_object(self, **kwargs):
+        form = super(ApplyTransactions, self).get_object(**kwargs)
         try:
-            form_id = request.POST.get("form_id")
-            if not form_id:
-                raise WysiwygFormsException("No form id.")
-            else:
-                form = Form.objects.get(id=form_id)
-                for t in json.loads(request.POST.get("transactions", "[]")):
-                    Transaction(**t).apply_to(form)
-                form.save()
-                return form.as_json()
+            for t in json.loads(self.request.POST.get("transactions", "[]")):
+                Transaction(**t).apply_to(form)
+            form.save()
         except WysiwygFormsException, e:
             self.error = e
-            return json.dumps({
-                "error": e.message
-            })
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(ApplyTransactions, self).get_context_data(**kwargs)
+        if self.error:
+            return { "error": self.error.message }
+        else:
+            return context["form"]
 
     def get_status(self):
         if self.error:

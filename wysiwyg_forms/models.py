@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from django import forms
 from django.template.defaultfilters import slugify
@@ -13,6 +15,27 @@ class Form(models.Model):
     slug        = models.SlugField(editable=False)
     name        = models.CharField(max_length=250)
     description = models.TextField()
+
+    # Don't use Django's serializers because it is just too cluttered.
+    class JSONEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, Form):
+                return { "name"        : obj.name,
+                         "id"          : obj.id,
+                         "description" : obj.description,
+                         "fields"      : [{ "label"     : f.label,
+                                            "name"      : f.slug,
+                                            "type"      : f.type,
+                                            "widget"    : f.widget,
+                                            "help_text" : f.help_text,
+                                            "required"  : f.required,
+                                            "position"  : f.position,
+                                            "choices"   : [{ "label"    : c.label,
+                                                             "position" : c.position }
+                                                           for c in f.choices] }
+                                          for f in obj.fields] }
+            else:
+                return super(JSONEncoder, self).default(obj)
 
     def __init__(self, *args, **kwargs):
         super(Form, self).__init__(*args, **kwargs)
@@ -39,21 +62,7 @@ class Form(models.Model):
         return type(str(self.slug), (forms.Form,), properties)
 
     def as_json(self):
-        # Don't use Django's serializers because it is just too cluttered.
-        return json.dumps({ "name"        : self.name,
-                            "id"          : self.id,
-                            "description" : self.description,
-                            "fields"      : [{ "label"     : f.label,
-                                               "name"      : f.slug,
-                                               "type"      : f.type,
-                                               "widget"    : f.widget,
-                                               "help_text" : f.help_text,
-                                               "required"  : f.required,
-                                               "position"  : f.position,
-                                               "choices"   : [{ "label"    : c.label,
-                                                                "position" : c.position }
-                                                              for c in f.choices] }
-                                             for f in self.fields] })
+        return json.dumps(self, cls=self.JSONEncoder)
 
     @property
     def fields(self):

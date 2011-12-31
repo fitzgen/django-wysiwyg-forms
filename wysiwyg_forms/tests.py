@@ -147,8 +147,8 @@ class ApplyTransactionsViewTestCase(BaseTestCase):
                                      "to"           : "my form"}])
 
         response = self.post("wysiwyg_forms_apply_transactions",
-                             data={ "transactions" : transactions,
-                                    "form_id"      : self.form.id})
+                             self.form.id,
+                             data={ "transactions" : transactions })
         self.assertEqual(response.status_code, 200)
 
         # Get the latest form instance

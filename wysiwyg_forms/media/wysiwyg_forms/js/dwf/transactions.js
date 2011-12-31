@@ -21,7 +21,6 @@ define(function (require, exports, module) {
             preSaveHook && preSaveHook();
 
             var promise = $.post(target, {
-                form_id: formId,
                 transactions: JSON.stringify(transactionsToSave)
             });
 

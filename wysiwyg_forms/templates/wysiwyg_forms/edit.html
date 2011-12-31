@@ -8,7 +8,7 @@
 {% block scripts %}
 
 <script type="text/json" id="initial-form">{{ form.as_json|safe }}</script>
-<script type="text/plain" id="save-target">{% url wysiwyg_forms_apply_transactions %}</script>
+<script type="text/plain" id="save-target">{% url wysiwyg_forms_apply_transactions form.id %}</script>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
 </script>
