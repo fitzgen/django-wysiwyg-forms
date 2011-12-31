@@ -4,6 +4,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils import simplejson as json
+from django.views.generic import DetailView
 
 from .exceptions import WysiwygFormsException
 from .models import Form
@@ -82,21 +83,25 @@ class ApplyTransactions(WysiwygFormView):
         else:
             return 200
 
-class Edit(WysiwygFormView):
+class Edit(DetailView):
     template_name = "wysiwyg_forms/edit.html"
-    mimetype = "text/html"
+    queryset = Form.objects.all()
+    context_object_name = "form"
 
     # Customize `base_template_name` to change what template
     # `wysiwyg_forms/edit.html` will extend.
     base_template_name = "wysiwyg_forms/base.html"
 
-    def get_context(self, request, form_id=None, *args, **kwargs):
-        context = { "base_template_name" : self.base_template_name,
-                    "debug"              : settings.DEBUG }
-        if form_id:
-            form = get_object_or_404(Form, id=form_id)
-        else:
+    def get_object(self, queryset=None):
+        try:
+            form = super(Edit, self).get_object(queryset)
+        except AttributeError:
             form = Form.objects.create(name="New Form",
                                        description="This is a new form.")
-        context["form"] = form.as_json()
-        return RequestContext(request, context)
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(Edit, self).get_context_data(**kwargs)
+        context["base_template_name"] = self.base_template_name
+        context["debug"] = settings.DEBUG
+        return context
