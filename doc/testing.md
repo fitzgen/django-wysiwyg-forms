@@ -1,6 +1,7 @@
 # Testing
 
-First of all, get Django WYSIWYG Forms installed as per the instructions [here](../README.md).
+First of all, get Django WYSIWYG Forms installed as per the instructions
+[here](./developing.md).
 
 ## Server-side Tests
 
