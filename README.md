@@ -42,8 +42,6 @@ Include the urls:
 
 ## TODO
 
-* Publish to PyPI
-
 * Check settings.DEBUG for whether to use a dynamic require() in UI or to load a
   prebuilt/optimized version of the JS
 
