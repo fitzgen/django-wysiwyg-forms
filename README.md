@@ -9,11 +9,17 @@ Docs) and then gives programmers access to those user created forms as
 
 ## Installing
 
+Install via pip:
+
+    pip install django-wysiwyg-forms
+
+or from source:
+
     git clone git://github.com/fitzgen/django-wysiwyg-forms.git
     cd django-wysiwyg-forms/
     python setup.py install
 
-Add `"wysiwyg_forms"` to `INSTALLED_APPS` in `settings.py`.
+Then, add `"wysiwyg_forms"` to `INSTALLED_APPS` in `settings.py`.
 
 Sync the database:
 
