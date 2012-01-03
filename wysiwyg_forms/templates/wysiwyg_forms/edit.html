@@ -13,11 +13,11 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
 </script>
 
-<script type="text/javascript" src="{{ MEDIA_URL }}/wysiwyg_forms/js/require.js">
+<script type="text/javascript" src="{{ STATIC_URL }}wysiwyg_forms/js/require.js">
 </script>
 <script type="text/javascript">
   require.config({
-    baseUrl: '{{ MEDIA_URL }}/wysiwyg_forms/js'
+    baseUrl: '{{ STATIC_URL }}wysiwyg_forms/js'
   });
   require(['dwf'], function (dwf) {
   });

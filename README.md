@@ -12,14 +12,19 @@ Docs) and then gives programmers access to those user created forms as
     git clone git://github.com/fitzgen/django-wysiwyg-forms.git
     cd django-wysiwyg-forms/
     python setup.py install
-    cd path/to/your/media # Accessible from MEDIA_URL
-    ln -s wysiwyg_forms path/to/django-wysiwyg-forms/wysiwyg_forms/media/wysiwyg_forms
 
-Add "wysiwyg_forms" to INSTALLED_APPS in settings.py.
+Add `"wysiwyg_forms"` to `INSTALLED_APPS` in `settings.py`.
 
 Sync the database:
 
     ./manage.py syncdb
+
+Make sure that `django.contrib.staticfiles` is installed
+properly. [See here for instructions](https://docs.djangoproject.com/en/dev/howto/static-files/).
+
+Collect the static files:
+
+    ./manage.py collectstatic
 
 Include the urls:
 
@@ -30,8 +35,6 @@ Include the urls:
     )
 
 ## TODO
-
-* Start using django.contrib.staticfiles in Django 1.3
 
 * Publish to PyPI
 

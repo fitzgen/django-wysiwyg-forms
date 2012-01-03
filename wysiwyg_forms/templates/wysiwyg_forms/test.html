@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/wysiwyg_forms/qunit/qunit.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}wysiwyg_forms/qunit/qunit.css" />
   </head>
   <body>
     <ul id="test" style="display:none">
@@ -13,9 +13,9 @@
     <ol id="qunit-tests"></ol>
 
     <script type="text/plain" id="iframe-src">{% url wysiwyg_forms_new_form %}</script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}/wysiwyg_forms/qunit/qunit.js">
+    <script type="text/javascript" src="{{ STATIC_URL }}wysiwyg_forms/qunit/qunit.js">
     </script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}/wysiwyg_forms/js/test.js">
+    <script type="text/javascript" src="{{ STATIC_URL }}wysiwyg_forms/js/test.js">
     </script>
   </body>
 </html>
