@@ -1,16 +1,17 @@
 from django import http
 from django import template
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils import simplejson as json
-from django.views.generic import DetailView
+from django.views.generic import DetailView, FormView
 
 from .exceptions import WysiwygFormsException
 from .models import Form
 from .transactions import Transaction
 
-__all__ = ("ApplyTransactions", "Edit")
+__all__ = ("ApplyTransactions", "Edit", "WysiwygFormView")
 
 class ApplyTransactions(DetailView):
     queryset = Form.objects.all()
@@ -72,3 +73,31 @@ class Edit(DetailView):
         context["base_template_name"] = self.base_template_name
         context["debug"] = settings.DEBUG
         return context
+
+class WysiwygFormView(FormView):
+    """
+    A thin wrapper around `django.views.generic.FormView`. Provide `form_id` to
+    specify which `wysiwyg_forms.models.Form` instance to render as a Django
+    form. A good place to hook in your own functionality is by subclassing this
+    class and overriding/extending the `form_valid` method. Look in to
+    `django.views.generic.FormView` for more.
+
+    Example usage:
+
+        urlpatterns = patterns("",
+            # ...
+            url(r"^foo/$",
+                WysiwygFormView.as_view(form_id=42,
+                                        template_name="my_app/template.html",
+                                        success_url=reverse("my_success_view")),
+                name="my_form_view")
+            )
+    """
+    form_id = None
+
+    def get_form_class(self):
+        if self.form_id:
+            return Form.objects.get(pk=self.form_id).as_django_form()
+        else:
+            raise ImproperlyConfigured(
+                "Don't know how to find the correct WYSIWYG form for this view. Provide form_id.")

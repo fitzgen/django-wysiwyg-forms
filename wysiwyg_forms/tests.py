@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import simplejson as json
@@ -7,6 +8,7 @@ from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists)
 from .models import Form, Field, Choice
 from .transactions import Transaction
+from .views import WysiwygFormView
 
 class BaseTestCase(TestCase):
     def setUp(self):
@@ -165,6 +167,18 @@ class NewFormViewTestCase(BaseTestCase):
         response = self.get("wysiwyg_forms_new_form")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(num_forms + 1, Form.objects.all().count())
+
+class WysiwygFormViewTestCase(BaseTestCase):
+    def test_get_form_class(self):
+        view = WysiwygFormView(form_id=self.form.id)
+        form_class = view.get_form_class()
+        self.assertTrue(issubclass(form_class, forms.Form),
+                        "WysiwygFormView.get_form_class() should return a subclass of a django Form class")
+
+        with self.assertRaises(ImproperlyConfigured):
+            view.form_id = None
+            view.get_form_class()
+
 
 class TransactionsTestCase(BaseTestCase):
     def setUp(self):
