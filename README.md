@@ -42,7 +42,6 @@ Include the urls:
 
 ## TODO
 
-* Check settings.DEBUG for whether to use a dynamic require() in UI or to load a
-  prebuilt/optimized version of the JS
+* Make a view that automatically sends emails on form submit
 
 * Export answers to forms as CSV
