@@ -1,5 +1,5 @@
 // Taken from https://docs.djangoproject.com/en/1.3/ref/contrib/csrf/#ajax
-define(function () {
+define(function (require, exports, module) {
     $(document).ajaxSend(function(event, xhr, settings) {
         function getCookie(name) {
             var cookieValue = null;

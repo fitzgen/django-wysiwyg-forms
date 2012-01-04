@@ -39,3 +39,21 @@ Django WYSIWYG Forms, and is used as a namespace in a few different places.
 * `media/wysiwyg_forms/js/dwf.js` - Ties the views and models together, as well
   as initializes the app, and just does general plumbing between modules. This
   is what you might consider the controller in the traditional MVC style.
+
+## Making an optimized build
+
+First you must install [nodejs](http://nodejs.org/) and
+[npm](http://npmjs.org/). Then run
+
+    npm install dryice
+
+to install the build tool that is used to optimize the JavaScript code.
+
+Once you have the prereqs installed, you can run
+
+    node Makefile.dryice.js
+
+from this project's base directory to update the
+`wysiwyg_forms/static/wysiwyg_forms/js/dwf.min.js` file with the latest minified
+and concatenated JavaScript. This optimized build is automatically loaded
+whenever `settings.DEBUG` is `False`.

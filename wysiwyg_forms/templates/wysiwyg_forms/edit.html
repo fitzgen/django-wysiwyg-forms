@@ -13,6 +13,8 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
 </script>
 
+{% if debug %}
+
 <script type="text/javascript" src="{{ STATIC_URL }}wysiwyg_forms/js/require.js">
 </script>
 <script type="text/javascript">
@@ -22,5 +24,16 @@
   require(['dwf'], function (dwf) {
   });
 </script>
+
+{% else %}
+
+<script type="text/javascript" src="{{ STATIC_URL }}wysiwyg_forms/js/dwf.min.js">
+</script>
+<script type="text/javascript">
+  require(['dwf'], function (dwf) {
+  });
+</script>
+
+{% endif %}
 
 {% endblock %}
