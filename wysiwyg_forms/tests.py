@@ -1,3 +1,6 @@
+# Python 2.5 compatibility
+from __future__ import with_statement
+
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
