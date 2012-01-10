@@ -32,7 +32,10 @@ class ApplyTransactions(DetailView):
         form = super(ApplyTransactions, self).get_object(**kwargs)
         try:
             for t in json.loads(self.request.POST.get("transactions", "[]")):
-                Transaction(**t).apply_to(form)
+                # Force non-unicode keys for older Pythons
+                tt = dict(zip((str(k) for k in t.iterkeys()),
+                              (v for v in t.itervalues())))
+                Transaction(**tt).apply_to(form)
             form.save()
         except WysiwygFormsException, e:
             self.error = e
