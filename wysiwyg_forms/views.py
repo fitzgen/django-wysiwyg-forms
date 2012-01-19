@@ -2,6 +2,7 @@ from django import http
 from django import template
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.utils import simplejson as json
@@ -14,6 +15,10 @@ from .transactions import Transaction
 __all__ = ("ApplyTransactions", "Edit", "WysiwygFormView")
 
 class ApplyTransactions(DetailView):
+    """
+    This view applies the transactions from the WYSIWYG client editor to save a
+    form.
+    """
     queryset = Form.objects.all()
     context_object_name = "form"
     http_method_names = ["post"]
@@ -55,13 +60,22 @@ class ApplyTransactions(DetailView):
             return 200
 
 class Edit(DetailView):
+    """
+    This is the view for editing a form and sends down the client side WYSIWYG
+    editor. Expects `pk` as a keyword argument.
+    """
     template_name = "wysiwyg_forms/edit.html"
     queryset = Form.objects.all()
     context_object_name = "form"
 
     # Customize `base_template_name` to change what template
-    # `wysiwyg_forms/edit.html` will extend.
+    # `wysiwyg_forms/edit.html` will extend. Change this instead of
+    # `template_name`.
     base_template_name = "wysiwyg_forms/base.html"
+
+    # Customize `save_view_name` to change where the client side JS will POST
+    # the transactions which save form state to.
+    save_view_name = "wysiwyg_forms_apply_transactions"
 
     def get_object(self, queryset=None):
         try:
@@ -69,12 +83,22 @@ class Edit(DetailView):
         except AttributeError:
             form = Form.objects.create(name="New Form",
                                        description="This is a new form.")
+            self.kwargs["pk"] = form.id
         return form
+
+    def get_save_view_url(self):
+        """
+        Returns the url for the view which is being used to save the form. By
+        default, uses `self.save_view_name` and the id of the form being edited
+        in a `django.core.urlresolvers.reverse()` look up.
+        """
+        return reverse(self.save_view_name, args=[self.kwargs["pk"]])
 
     def get_context_data(self, **kwargs):
         context = super(Edit, self).get_context_data(**kwargs)
         context["base_template_name"] = self.base_template_name
         context["debug"] = settings.DEBUG
+        context["save_target"] = self.get_save_view_url()
         return context
 
 class WysiwygFormView(FormView):
