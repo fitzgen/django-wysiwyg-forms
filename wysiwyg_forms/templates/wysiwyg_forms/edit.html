@@ -5,6 +5,10 @@
 </div>
 {% endblock %}
 
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ STATIC_URL }}wysiwyg_forms/css/dwf.css" />
+{% endblock %}
+
 {% block scripts %}
 
 <script type="text/json" id="initial-form">{{ form.as_json|safe }}</script>
