@@ -145,6 +145,7 @@ class Field(models.Model):
     def as_django_form_field(self):
         # TODO: catch exceptions and display helpful error messages
         field_properties = { "help_text": self.help_text,
+                             "label": self.label,
                              "required": self.required }
         if field_type_has_choices(self.type) and self.choices:
             field_properties["choices"] = ((c.slug, c.label)
