@@ -122,9 +122,19 @@ class WysiwygFormView(FormView):
     """
     form_id = None
 
+    def get_wysiwyg_form(self):
+        return Form.objects.get(pk=self.form_id)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(WysiwygFormView, self).get_context_data(**kwargs)
+        wysiwyg_form = self.get_wysiwyg_form()
+        ctx["form_description"] = wysiwyg_form.description
+        ctx["form_name"] = wysiwyg_form.name
+        return ctx
+
     def get_form_class(self):
         if self.form_id:
-            return Form.objects.get(pk=self.form_id).as_django_form()
+            return self.get_wysiwyg_form().as_django_form()
         else:
             raise ImproperlyConfigured(
                 "Don't know how to find the correct WYSIWYG form for this view. Provide form_id.")
