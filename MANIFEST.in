@@ -1,0 +1,8 @@
+include AUTHORS
+include MANIFEST.in
+include LICENSE.*
+include README.md
+
+recursive-include docs *
+recursive-include wysiwyg_forms/templates *
+recursive-include wysiwyg_forms/static *

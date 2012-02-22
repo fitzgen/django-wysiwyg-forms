@@ -7,4 +7,7 @@ setup(name = "django-wysiwyg-forms",
       author_email = "fitzgen@gmail.com",
       url = "https://github.com/fitzgen/django-wysiwyg-forms",
       packages = find_packages(),
-      install_requires = ['django==1.3'])
+      include_package_data = True,
+      zip_safe = False,
+      install_requires = ['django==1.3'],
+      )
