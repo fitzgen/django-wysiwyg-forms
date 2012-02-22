@@ -19,6 +19,9 @@ class Form(models.Model):
     name        = models.CharField(max_length=250)
     description = models.TextField()
 
+    def __unicode__(self):
+        return u"%s[%d]" % (self.name, self.pk)
+
     # Don't use Django's serializers because it is just too cluttered.
     class JSONEncoder(json.JSONEncoder):
         def default(self, obj):
@@ -120,9 +123,15 @@ class Field(models.Model):
     label     = models.CharField(max_length=250)
     help_text = models.CharField(max_length=250, default="")
     type      = models.CharField(max_length=250, default="CharField")
-    position  = models.IntegerField(editable=False)
+    position  = models.IntegerField(editable=True)
     required  = models.BooleanField(default=True)
     widget    = models.CharField(max_length=250, default="TextInput")
+
+    def __unicode__(self):
+        return u"%s.%s" % (self.form, self.slug)
+
+    class Meta:
+        ordering = ("form__name", "position")
 
     def __init__(self, *args, **kwargs):
         super(Field, self).__init__(*args, **kwargs)
@@ -209,6 +218,9 @@ class Choice(models.Model):
     slug     = models.SlugField(editable=False)
     label    = models.CharField(max_length=250)
     position = models.IntegerField()
+
+    class Meta:
+        ordering = ("field__form__name", "position")
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.label).replace("-", "_")[:50]
