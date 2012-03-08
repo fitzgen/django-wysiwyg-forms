@@ -39,7 +39,9 @@ to your project's URLs:
         # ...
     )
 
-### `wysiwyg_forms.views.WysiwygFormView`
+### Views
+
+#### `wysiwyg_forms.views.WysiwygFormView`
 
 This is a generic view that gives you a WYSIWYG form as a normal django form. It
 is a thin wrapper around `django.views.generic.FormView`. Provide `form_id` to
@@ -59,7 +61,7 @@ Example usage:
             name="my_form_view")
         )
 
-#### Extending `WysiwygFormView`
+##### Extending `WysiwygFormView`
 
 If you wanted to extend `WysiwygFormView` to send off emails containing the
 answers to the form's questions when a submission is successful, you could do
@@ -98,3 +100,14 @@ something like this:
                       self.get_email_from_address(form),
                       self.get_email_recipients(form))
             return super(EmailFormView, self).form_valid(form)
+
+### Template Tags
+
+#### {% wysiwyg_form *id* *[type]* %}
+
+Render the WYSIWYG form to HTML. `id` can be either a template context variable
+or an integer and specifies which form is being rendered. `type` is optional and
+either "p", "ul", or "table". It defaults to "ul".
+
+Note that just like Django's builtin form classes, this does not render `<form>`
+tags; that is up to you.
