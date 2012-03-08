@@ -4,6 +4,7 @@ from __future__ import with_statement
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.template import Context, Template
 from django.test import TestCase
 from django.utils import simplejson as json
 
@@ -319,3 +320,60 @@ class TransactionsTestCase(BaseTestCase):
         transaction.apply_to(self.form)
         self.assertEqual(num_choices, len(self.field.choices))
         self.assertEqual(self.field.choices[0].label, "sure")
+
+class TemplateTagTestCase(BaseTestCase):
+    def setUp(self, *args, **kwargs):
+        super(TemplateTagTestCase, self).setUp(*args, **kwargs)
+        self.form.add_field("Foobar")
+
+    def test_with_render_type(self):
+        c = Context({ "form_id": self.form.id })
+
+        t = Template("""
+        {% load wysiwyg_forms_tags %}
+        {% wysiwyg_form form_id "p" %}
+        """)
+
+        self.assertTrue("Foobar" in t.render(c) and "<p>" in t.render(c),
+                        t.render(c))
+
+        t = Template("""
+        {% load wysiwyg_forms_tags %}
+        {% wysiwyg_form form_id "ul" %}
+        """)
+        self.assertTrue("Foobar" in t.render(c) and "<li>" in t.render(c),
+                        t.render(c))
+
+        t = Template("""
+        {% load wysiwyg_forms_tags %}
+        {% wysiwyg_form form_id "table" %}
+        """)
+        self.assertTrue("Foobar" in t.render(c) and "<td>" in t.render(c),
+                        t.render(c))
+
+    def test_without_render_type(self):
+        c = Context({ "form_id": self.form.id })
+        t = Template("""
+        {% load wysiwyg_forms_tags %}
+        {% wysiwyg_form form_id %}
+        """)
+        self.assertTrue("Foobar" in t.render(c),
+                        t.render(c))
+
+    def test_with_integer(self):
+        c = Context({})
+        t = Template("""
+        {%% load wysiwyg_forms_tags %%}
+        {%% wysiwyg_form %d %%}
+        """ % self.form.id)
+        self.assertTrue("Foobar" in t.render(c),
+                        t.render(c))
+
+    def test_with_variable(self):
+        c = Context({ "form_id": self.form.id })
+        t = Template("""
+        {% load wysiwyg_forms_tags %}
+        {% wysiwyg_form form_id %}
+        """)
+        self.assertTrue("Foobar" in t.render(c),
+                        t.render(c))
