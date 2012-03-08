@@ -40,8 +40,6 @@ Include the urls:
         # ...
     )
 
-## TODO
+## More Documentation
 
-* Make a view that automatically sends emails on form submit
-
-* Export answers to forms as CSV
+[Here](./doc/README.md).
