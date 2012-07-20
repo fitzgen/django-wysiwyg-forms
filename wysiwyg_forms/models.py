@@ -135,7 +135,7 @@ class Field(models.Model):
     form      = models.ForeignKey(Form, related_name="_field_set")
     slug      = models.SlugField(editable=False)
     label     = models.CharField(max_length=250)
-    help_text = models.CharField(max_length=250, default="")
+    help_text = models.CharField(max_length=250, blank=True, default="")
     type      = models.CharField(max_length=250, default="CharField")
     position  = models.IntegerField(editable=True)
     required  = models.BooleanField(default=True)
