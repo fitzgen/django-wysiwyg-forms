@@ -32,7 +32,7 @@ define(function (require, exports, module) {
         this._elements.fields.bind('sortupdate', util.bind(function () {
             this._elements.fields.find('li').each(function (i, el) {
                 lib.updateFieldPosition($(el).find('.DWF-field-label').text(), i);
-            })
+            });
         }, this));
     };
 
