@@ -66,7 +66,7 @@ class Form(models.Model):
         if self.revision:
             # Incremement the revision number and generate a new revision hash
             rev_number, rev_hash = self.revision.split("-")
-            rev_number += 1
+            rev_number = int(rev_number) + 1
             rev_hash = uuid4().hex
             self.revision = "%d-%s" % (rev_number, rev_hash)
         else:
