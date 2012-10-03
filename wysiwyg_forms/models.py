@@ -3,6 +3,8 @@ try:
 except ImportError:
     import simplejson as json
 
+from uuid import uuid4
+
 from django.db import models
 from django import forms
 from django.template.defaultfilters import slugify
@@ -17,6 +19,7 @@ from .utils import field_type_has_choices
 class Form(models.Model):
     slug        = models.SlugField(editable=False)
     name        = models.CharField(max_length=250)
+    revision    = models.CharField(max_length=250, editable=False)
     description = models.TextField()
 
     def __unicode__(self):
@@ -59,6 +62,17 @@ class Form(models.Model):
         self.slug = slugify(self.name).replace("-", "_")[:50]
         for field in self.fields:
             field.save()
+
+        if self.revision:
+            # Incremement the revision number and generate a new revision hash
+            rev_number, rev_hash = self.revision.split("-")
+            rev_number = int(rev_number) + 1
+            rev_hash = uuid4().hex
+            self.revision = "%d-%s" % (rev_number, rev_hash)
+        else:
+            # Initial revision
+            self.revision = "0-%s" % uuid4().hex
+
         super(Form, self).save(*args, **kwargs)
 
     def as_django_form(self):
@@ -121,7 +135,7 @@ class Field(models.Model):
     form      = models.ForeignKey(Form, related_name="_field_set")
     slug      = models.SlugField(editable=False)
     label     = models.CharField(max_length=250)
-    help_text = models.CharField(max_length=250, default="")
+    help_text = models.CharField(max_length=250, blank=True, default="")
     type      = models.CharField(max_length=250, default="CharField")
     position  = models.IntegerField(editable=True)
     required  = models.BooleanField(default=True)
