@@ -29,6 +29,13 @@ class BaseTestCase(TestCase):
                                 data,
                                 **extra)
 
+class SaveFormTestCase(BaseTestCase):
+    def test_revision_numbers(self):
+        self.assertEqual(self.form.revision.split("-")[0], "0")
+        self.form.name = "foo bar baz"
+        self.form.save()
+        self.assertEqual(self.form.revision.split("-")[0], "1")
+
 class AddRemoveFieldTestCase(BaseTestCase):
     def test_add_field(self):
         self.assertEqual(len(self.form.fields), 0,
