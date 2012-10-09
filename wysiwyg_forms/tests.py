@@ -190,6 +190,10 @@ class WysiwygFormViewTestCase(BaseTestCase):
             view.form_id = None
             view.get_form_class()
 
+    def test_get_form_by_slug(self):
+        view = WysiwygFormView(form_slug=self.form.slug)
+        self.assertEqual(view.get_wysiwyg_form(), self.form)
+
 
 class TransactionsTestCase(BaseTestCase):
     def setUp(self):
