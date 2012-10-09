@@ -104,7 +104,6 @@ class Edit(DetailView):
 class WysiwygFormView(FormView):
     """
     A thin wrapper around `django.views.generic.FormView`. Provide `form_id` or
-
     `form_slug` to specify which `wysiwyg_forms.models.Form` instance to render
     as a Django form. A good place to hook in your own functionality is by
     subclassing this class and overriding/extending the `form_valid`
