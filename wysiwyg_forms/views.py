@@ -103,11 +103,11 @@ class Edit(DetailView):
 
 class WysiwygFormView(FormView):
     """
-    A thin wrapper around `django.views.generic.FormView`. Provide `form_id` to
-    specify which `wysiwyg_forms.models.Form` instance to render as a Django
-    form. A good place to hook in your own functionality is by subclassing this
-    class and overriding/extending the `form_valid` method. Look in to
-    `django.views.generic.FormView` for more.
+    A thin wrapper around `django.views.generic.FormView`. Provide `form_id` or
+    `form_slug` to specify which `wysiwyg_forms.models.Form` instance to render
+    as a Django form. A good place to hook in your own functionality is by
+    subclassing this class and overriding/extending the `form_valid`
+    method. Look in to `django.views.generic.FormView` for more.
 
     Example usage:
 
@@ -119,11 +119,22 @@ class WysiwygFormView(FormView):
                                         success_url=reverse("my_success_view")),
                 name="my_form_view")
             )
+
     """
     form_id = None
+    form_slug = None
 
     def get_wysiwyg_form(self):
-        return Form.objects.get(pk=self.form_id)
+        if not (self.form_id or self.form_slug):
+            raise ImproperlyConfigured(
+                "Don't know how to find the correct WYSIWYG form for this view. Provide form_id or form_slug.")
+        if self.form_id and self.form_slug:
+            raise ImproperlyConfigured(
+                "Can not provide both a form_id and a form_slug.")
+        elif self.form_id:
+            return Form.objects.get(pk=self.form_id)
+        else:
+            return Form.objects.get(slug=self.form_slug)
 
     def get_context_data(self, **kwargs):
         ctx = super(WysiwygFormView, self).get_context_data(**kwargs)
@@ -133,8 +144,5 @@ class WysiwygFormView(FormView):
         return ctx
 
     def get_form_class(self):
-        if self.form_id:
-            return self.get_wysiwyg_form().as_django_form()
-        else:
-            raise ImproperlyConfigured(
-                "Don't know how to find the correct WYSIWYG form for this view. Provide form_id.")
+        return self.get_wysiwyg_form().as_django_form()
+

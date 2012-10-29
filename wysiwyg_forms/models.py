@@ -1,8 +1,3 @@
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
 from uuid import uuid4
 
 from django.db import models
@@ -15,6 +10,7 @@ from .exceptions import (ChoiceDoesNotExist, ChoiceAlreadyExists,
                          FieldDoesNotExist, FieldAlreadyExists,
                          WysiwygFormsException)
 from .utils import field_type_has_choices
+
 
 class Form(models.Model):
     slug        = models.SlugField(editable=False)
