@@ -9,5 +9,5 @@ setup(name = "django-wysiwyg-forms",
       packages = find_packages(),
       include_package_data = True,
       zip_safe = False,
-      install_requires = ['django>=1.5'],
+      install_requires = ['django>=1.8'],
       )
