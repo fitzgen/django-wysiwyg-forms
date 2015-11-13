@@ -21,9 +21,9 @@ or from source:
 
 Then, add `"wysiwyg_forms"` to `INSTALLED_APPS` in `settings.py`.
 
-Sync the database:
+Migrate the database:
 
-    ./manage.py syncdb
+    ./manage.py migrate
 
 Make sure that `django.contrib.staticfiles` is installed
 properly. [See here for instructions](https://docs.djangoproject.com/en/dev/howto/static-files/).
