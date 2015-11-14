@@ -7,6 +7,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import DetailView, FormView
 
 from .exceptions import WysiwygFormsException
@@ -60,6 +62,7 @@ class ApplyTransactions(DetailView):
         else:
             return 200
 
+
 class Edit(DetailView):
     """
     This is the view for editing a form and sends down the client side WYSIWYG
@@ -77,6 +80,10 @@ class Edit(DetailView):
     # Customize `save_view_name` to change where the client side JS will POST
     # the transactions which save form state to.
     save_view_name = "wysiwyg_forms_apply_transactions"
+
+    @method_decorator(ensure_csrf_cookie)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Edit, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         try:
