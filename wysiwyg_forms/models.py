@@ -128,7 +128,7 @@ class Form(models.Model):
         return field
 
 class Field(models.Model):
-    form      = models.ForeignKey(Form, related_name="_field_set")
+    form      = models.ForeignKey(Form, related_name="_field_set", on_delete=models.CASCADE)
     slug      = models.SlugField(editable=False)
     label     = models.CharField(max_length=250)
     help_text = models.TextField(blank=True, default="")
@@ -225,7 +225,7 @@ class Field(models.Model):
         return choice
 
 class Choice(models.Model):
-    field    = models.ForeignKey(Field, related_name="_choice_set")
+    field    = models.ForeignKey(Field, related_name="_choice_set", on_delete=models.CASCADE)
     slug     = models.SlugField(editable=False)
     label    = models.CharField(max_length=250)
     position = models.IntegerField()

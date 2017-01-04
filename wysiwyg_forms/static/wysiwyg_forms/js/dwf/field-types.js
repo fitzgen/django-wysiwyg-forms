@@ -26,6 +26,10 @@ define(function (require, exports, module) {
           widget: "DateTimeInput",
           description: "Date and Time" },
 
+        { fieldType: "SplitDateTimeField",
+          widget: "SplitDateTimeWidget",
+          description: "Date and Time (split)" },
+
         { fieldType: "EmailField",
           widget: "TextInput",
           description: "Email" },

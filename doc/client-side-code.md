@@ -45,13 +45,13 @@ Django WYSIWYG Forms, and is used as a namespace in a few different places.
 First you must install [nodejs](http://nodejs.org/) and
 [npm](http://npmjs.org/). Then run
 
-    npm install dryice
+    npm install requirejs
 
 to install the build tool that is used to optimize the JavaScript code.
 
 Once you have the prereqs installed, you can run
 
-    node Makefile.dryice.js
+    r.js -o build.js
 
 from this project's base directory to update the
 `wysiwyg_forms/static/wysiwyg_forms/js/dwf.min.js` file with the latest minified
