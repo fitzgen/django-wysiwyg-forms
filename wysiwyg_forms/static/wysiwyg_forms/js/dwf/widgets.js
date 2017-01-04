@@ -50,6 +50,9 @@ define(function (require, exports, module) {
     exports.DateTimeInput = function () {};
     exports.DateTimeInput.prototype = new exports.TextInput();
 
+    exports.SplitDateTimeWidget = function () {};
+    exports.SplitDateTimeWidget.prototype = new exports.TextInput();
+
     exports.TimeInput = function () {};
     exports.TimeInput.prototype = new exports.TextInput();
 
